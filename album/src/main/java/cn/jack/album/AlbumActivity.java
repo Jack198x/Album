@@ -95,7 +95,7 @@ public class AlbumActivity extends AppCompatActivity {
         albumListAdapter = new AlbumListAdapter(AlbumActivity.this, presenter.getAlbums(), listClickListener);
         albumGridRecyclerView.setAdapter(albumGridAdapter);
         albumListRecyclerView.setAdapter(albumListAdapter);
-        presenter.loadAlbumPhotos(AlbumMediaScanner.ALBUM_ID_ALL_PHOTOS);
+        presenter.loadAlbumPhotos(AlbumMediaScanner.ALBUM_ID_ALL_PHOTOS,enableCamera);
         presenter.loadAlbumList();
     }
 
@@ -227,7 +227,7 @@ public class AlbumActivity extends AppCompatActivity {
         AlbumMediaScanner.scanFile(AlbumActivity.this, scanFile, new AlbumCallback<String>() {
             @Override
             public void onCompleted(String object) {
-                presenter.loadAlbumPhotos(AlbumMediaScanner.ALBUM_ID_ALL_PHOTOS);
+                presenter.loadAlbumPhotos(AlbumMediaScanner.ALBUM_ID_ALL_PHOTOS,enableCamera);
             }
 
             @Override
@@ -310,7 +310,7 @@ public class AlbumActivity extends AppCompatActivity {
             if (!albumId.equals(currentAlbumId)) {
                 currentAlbumId = albumId;
                 albumListButton.setText(albumName);
-                presenter.loadAlbumPhotos(currentAlbumId);
+                presenter.loadAlbumPhotos(currentAlbumId,enableCamera);
             }
             albumListRecyclerView.setVisibility(View.GONE);
         }

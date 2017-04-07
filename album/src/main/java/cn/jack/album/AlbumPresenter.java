@@ -4,7 +4,6 @@ import android.app.ProgressDialog;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v7.util.DiffUtil;
-import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -22,6 +21,8 @@ public class AlbumPresenter {
     private DiffUtil.DiffResult photoDiffResult;
     private DiffUtil.DiffResult albumDiffResult;
 
+    private boolean enableCamera=false;
+
     public AlbumPresenter(AlbumActivity view) {
         this.view = view;
         progressDialog = new ProgressDialog(view);
@@ -37,7 +38,8 @@ public class AlbumPresenter {
         return photos;
     }
 
-    public void loadAlbumPhotos(String albumId) {
+    public void loadAlbumPhotos(String albumId,boolean enableCamera) {
+        this.enableCamera=enableCamera;
         new LoadAlbumPhotosTask().execute(albumId);
     }
 
@@ -57,7 +59,9 @@ public class AlbumPresenter {
         protected ArrayList<Uri> doInBackground(String... albumId) {
             ArrayList<Uri> list = new ArrayList<>();
             if (albumId[0].equals(AlbumMediaScanner.ALBUM_ID_ALL_PHOTOS)) {
-                list.add(Uri.parse("http://camera"));
+                if(enableCamera){
+                    list.add(Uri.parse("http://camera"));
+                }
                 list.addAll(AlbumMediaScanner.getAllPhotos(view));
             } else {
                 list.addAll(AlbumMediaScanner.getPhotosByAlbumId(view, albumId[0]));

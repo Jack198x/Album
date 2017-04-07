@@ -27,26 +27,25 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 cameraOutPutFile = new File(FileUtil.getSystemPicturePath(), System.currentTimeMillis() + "_" + "test.jpg");
-                Album.with(MainActivity.this,getString(R.string.album))
-                        .setListener(listener)
+                Album.with(MainActivity.this, getString(R.string.album))
+                        .title("Album")
+                        .enableCrop(true)
                         .enableCamera(true)
                         .maxChoice(1)
+                        .setListener(new AlbumListener() {
+                            @Override
+                            public void onPhotosSelected(ArrayList<String> photos) {
+                                imageView.setImageURI(Uri.parse(photos.get(0)));
+                            }
+
+                            @Override
+                            public void onError(String error) {
+
+                            }
+                        })
                         .open();
 
             }
         });
     }
-
-    private AlbumListener listener = new AlbumListener() {
-
-        @Override
-        public void onPhotosSelected(ArrayList<String> photos) {
-            imageView.setImageURI(Uri.parse(photos.get(0)));
-        }
-
-        @Override
-        public void onError(String error) {
-
-        }
-    };
 }
