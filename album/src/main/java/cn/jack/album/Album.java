@@ -122,6 +122,30 @@ public class Album {
         }
     }
 
+    void activityOpenCamera(File outputFile) {
+        if (PermissionUtil.checkPermission(activity, Manifest.permission.CAMERA)) {
+            try {
+                Intent intent = new Intent();
+                //通过FileProvider创建一个content类型的Uri
+                Uri cameraOutPutUri = FileProviderCompat.getUriForFile(activity, authority, outputFile);
+                FileProviderCompat.grantReadUriPermission(intent);
+                intent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, cameraOutPutUri);
+                if (intent.resolveActivity(activity.getPackageManager()) != null) {
+                    activity.startActivityForResult(intent, REQUEST_CODE_CAMERA);
+                } else {
+                    Toast.makeText(activity, "无法打开相机应用!", Toast.LENGTH_SHORT).show();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                Toast.makeText(activity, "无法打开相机应用!", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            PermissionUtil.requestPermission(activity, Manifest.permission.CAMERA);
+            Toast.makeText(activity, R.string.no_camera_permission, Toast.LENGTH_SHORT).show();
+        }
+    }
+
 
     /**
      * 跳转到系统裁剪界面
@@ -138,6 +162,7 @@ public class Album {
         }
     }
 
+
     /**
      * 跳转到系统裁剪界面
      *
@@ -151,6 +176,40 @@ public class Album {
             PermissionUtil.requestPermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE);
             Toast.makeText(activity, R.string.no_storage_permission, Toast.LENGTH_SHORT).show();
         }
+    }
+
+    void activityOpenCrop(File cropInputFile, Uri cropOutputUri){
+        if (PermissionUtil.checkPermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+            try {
+                Intent intent = new Intent();
+                Uri inputUri = FileProviderCompat.getUriForFile(activity, authority, cropInputFile);
+                FileProviderCompat.grantReadUriPermission(intent);
+                intent.setAction("com.android.camera.action.CROP");
+                intent.setDataAndType(inputUri, "image/*");
+                intent.putExtra("crop", true);
+                intent.putExtra("scale", true);
+                intent.putExtra("aspectX", DEFAULT_ASPECT);
+                intent.putExtra("aspectY", DEFAULT_ASPECT);
+                intent.putExtra("outputX", DEFAULT_OUTPUT);
+                intent.putExtra("outputY", DEFAULT_OUTPUT);
+                intent.putExtra("return-data", false);
+                intent.putExtra("outputFormat", OUTPUT_FORMAT);
+                intent.putExtra("noFaceDetection", true);
+                intent.putExtra("scaleUpIfNeeded", true);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, cropOutputUri);
+                activity.startActivityForResult(intent, REQUEST_CODE_CROP);
+            } catch (Exception e) {
+                e.printStackTrace();
+                Toast.makeText(activity, "图片打开失败", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            PermissionUtil.requestPermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE);
+            Toast.makeText(activity, R.string.no_storage_permission, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    void activityOpenCrop(Uri cropInputUri, Uri cropOutputUri) {
+        activityOpenCrop(new File(cropInputUri.getPath()),cropOutputUri);
     }
 
 
