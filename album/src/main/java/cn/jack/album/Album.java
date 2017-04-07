@@ -179,6 +179,7 @@ public class Album {
             intent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
             intent.putExtra(MediaStore.EXTRA_OUTPUT, cameraOutPutUri);
             if (intent.resolveActivity(activity.getPackageManager()) != null) {
+                fragment.setCameraOutputUri(Uri.fromFile(outputFile));
                 fragment.startActivityForResult(intent, REQUEST_CODE_CAMERA);
             } else {
                 Toast.makeText(activity, "无法打开相机应用!", Toast.LENGTH_SHORT).show();
@@ -214,6 +215,7 @@ public class Album {
             intent.putExtra("noFaceDetection", true);
             intent.putExtra("scaleUpIfNeeded", true);
             intent.putExtra(MediaStore.EXTRA_OUTPUT, cropOutputUri);
+            fragment.setCropOutputUri(cropOutputUri);
             fragment.startActivityForResult(intent, REQUEST_CODE_CROP);
         } catch (Exception e) {
             e.printStackTrace();

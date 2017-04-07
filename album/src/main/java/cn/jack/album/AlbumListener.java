@@ -7,11 +7,7 @@ import java.util.ArrayList;
  */
 public interface AlbumListener {
 
-
-    void onCameraFinish();
-
     /**
-     *
      * @param photos
      */
     void onPhotosSelected(ArrayList<String> photos);

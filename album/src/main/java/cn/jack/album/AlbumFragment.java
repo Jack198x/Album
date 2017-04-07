@@ -3,6 +3,7 @@ package cn.jack.album;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
+import android.net.Uri;
 import android.text.TextUtils;
 
 import java.util.ArrayList;
@@ -14,6 +15,8 @@ import java.util.ArrayList;
 public class AlbumFragment extends Fragment {
 
     private AlbumListener albumListener;
+    private Uri cameraOutUri;
+    private Uri cropOutputUri;
 
     public AlbumFragment() {
 
@@ -21,6 +24,14 @@ public class AlbumFragment extends Fragment {
 
     public void setAlbumListener(AlbumListener albumListener) {
         this.albumListener = albumListener;
+    }
+
+    public void setCameraOutputUri(Uri cameraOutUri) {
+        this.cameraOutUri = cameraOutUri;
+    }
+
+    public void setCropOutputUri(Uri cropOutputUri) {
+        this.cropOutputUri = cropOutputUri;
     }
 
     @Override
@@ -36,7 +47,16 @@ public class AlbumFragment extends Fragment {
         }
         if (requestCode == Album.REQUEST_CODE_CAMERA) {
             if (resultCode == Activity.RESULT_OK) {
-                albumListener.onCameraFinish();
+                ArrayList<String> photos = new ArrayList<>();
+                photos.add(cameraOutUri.getPath());
+                albumListener.onPhotosSelected(photos);
+            }
+        }
+        if (requestCode == Album.REQUEST_CODE_CROP) {
+            if (resultCode == Activity.RESULT_OK) {
+                ArrayList<String> photos = new ArrayList<>();
+                photos.add(cropOutputUri.getPath());
+                albumListener.onPhotosSelected(photos);
             }
         }
         if (requestCode == Album.REQUEST_CODE_ALBUM && resultCode == Album.RESULT_OK) {
