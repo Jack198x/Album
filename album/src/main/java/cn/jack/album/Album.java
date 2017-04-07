@@ -35,13 +35,15 @@ public class Album {
 
     private Activity activity;
     private AlbumFragment fragment;
+    private String authority;
     private String title;
     private boolean enableCamera = false;
     private boolean enableCrop = false;
     private int maxChoice = 1;
 
-    public Album(Activity activity, String title, boolean enableCamera) {
+    private Album(Activity activity,String authority, String title, boolean enableCamera) {
         this.activity = activity;
+        this.authority = authority;
         this.title = title;
         this.enableCamera = enableCamera;
         fragment = new AlbumFragment();
@@ -53,8 +55,8 @@ public class Album {
         fragmentManager.executePendingTransactions();
     }
 
-    public static Album with(Activity activity) {
-        return new Album(activity, "选择图片", false);
+    public static Album with(Activity activity,String authority) {
+        return new Album(activity,authority, "选择图片", false);
     }
 
 
@@ -157,6 +159,7 @@ public class Album {
      */
     private void startAlbumActivityForResult() {
         Intent intent = new Intent(activity, AlbumActivity.class);
+        intent.putExtra("authority", authority);
         intent.putExtra("title", title);
         intent.putExtra("enableCamera", enableCamera);
         intent.putExtra("enableCrop", enableCrop);
@@ -174,7 +177,7 @@ public class Album {
         try {
             Intent intent = new Intent();
             //通过FileProvider创建一个content类型的Uri
-            Uri cameraOutPutUri = FileProviderCompat.getUriForFile(activity, activity.getString(R.string.support_authority), outputFile);
+            Uri cameraOutPutUri = FileProviderCompat.getUriForFile(activity, authority, outputFile);
             FileProviderCompat.grantReadUriPermission(intent);
             intent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
             intent.putExtra(MediaStore.EXTRA_OUTPUT, cameraOutPutUri);
@@ -200,7 +203,7 @@ public class Album {
     private void startCropActivityForResult(File cropInputFile, Uri cropOutputUri) {
         try {
             Intent intent = new Intent();
-            Uri inputUri = FileProviderCompat.getUriForFile(activity, activity.getString(R.string.support_authority), cropInputFile);
+            Uri inputUri = FileProviderCompat.getUriForFile(activity, authority, cropInputFile);
             FileProviderCompat.grantReadUriPermission(intent);
             intent.setAction("com.android.camera.action.CROP");
             intent.setDataAndType(inputUri, "image/*");

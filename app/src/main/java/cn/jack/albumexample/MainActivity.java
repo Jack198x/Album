@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 cameraOutPutFile = new File(FileUtil.getSystemPicturePath(), System.currentTimeMillis() + "_" + "test.jpg");
-                Album.with(MainActivity.this)
+                Album.with(MainActivity.this,getString(R.string.album))
                         .setListener(listener)
                         .enableCamera(true)
                         .maxChoice(1)
@@ -38,10 +38,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private AlbumListener listener = new AlbumListener() {
-        @Override
-        public void onCameraFinish() {
-            imageView.setImageURI(Uri.parse(cameraOutPutFile.getAbsolutePath()));
-        }
 
         @Override
         public void onPhotosSelected(ArrayList<String> photos) {

@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.util.DiffUtil;
@@ -21,6 +22,7 @@ import android.widget.Toast;
 import java.io.File;
 import java.util.ArrayList;
 
+import cn.jack.album.util.FileProviderCompat;
 import cn.jack.album.util.FileUtil;
 import cn.jack.album.util.PermissionUtil;
 
@@ -37,6 +39,7 @@ public class AlbumActivity extends AppCompatActivity {
     private RecyclerView albumListRecyclerView;
     private Button albumListButton;
 
+    private String authority;
     private boolean enableCamera = false;
     private boolean enableCrop = false;
     private int maxChoice = 1;
@@ -64,6 +67,7 @@ public class AlbumActivity extends AppCompatActivity {
         setContentView(R.layout.activity_album);
         initToolbar();
         Intent intent = getIntent();
+        authority = intent.getStringExtra("authority");
         enableCamera = intent.getBooleanExtra("enableCamera", false);
         enableCrop = intent.getBooleanExtra("enableCrop", false);
         maxChoice = intent.getIntExtra("maxLimit", TYPE_SINGLE_CHOOSE);
@@ -87,7 +91,7 @@ public class AlbumActivity extends AppCompatActivity {
 
     protected void bind() {
         presenter = new AlbumPresenter(this);
-        albumGridAdapter = new AlbumGridAdapter(AlbumActivity.this, presenter.getPhotos(), enableCamera, maxChoice);
+        albumGridAdapter = new AlbumGridAdapter(AlbumActivity.this, presenter.getPhotos(), maxChoice);
         albumListAdapter = new AlbumListAdapter(AlbumActivity.this, presenter.getAlbums(), listClickListener);
         albumGridRecyclerView.setAdapter(albumGridAdapter);
         albumListRecyclerView.setAdapter(albumListAdapter);
@@ -195,7 +199,7 @@ public class AlbumActivity extends AppCompatActivity {
                                 .buildUpon()
                                 .appendPath(System.currentTimeMillis() + "_" + CROP_FILE_NAME)
                                 .build();
-                        Album.with(AlbumActivity.this).openCrop(cameraOutputFile, cropOutPutUri);
+                        Album.with(AlbumActivity.this,authority).openCrop(cameraOutputFile, cropOutPutUri);
                     }
                 }
             }
@@ -240,7 +244,7 @@ public class AlbumActivity extends AppCompatActivity {
         public void onCameraClick() {
             if (PermissionUtil.checkPermission(AlbumActivity.this, Manifest.permission.CAMERA)) {
                 cameraOutputFile = new File(FileUtil.getSystemPicturePath(), System.currentTimeMillis() + "_" + CAMERA_FILE_NAME);
-                Album.with(AlbumActivity.this).openCamera(cameraOutputFile);
+                openCamera(cameraOutputFile);
             } else {
                 PermissionUtil.requestPermission(AlbumActivity.this, Manifest.permission.CAMERA);
                 Toast.makeText(AlbumActivity.this, R.string.no_camera_permission, Toast.LENGTH_SHORT).show();
@@ -256,7 +260,7 @@ public class AlbumActivity extends AppCompatActivity {
                             .buildUpon()
                             .appendPath(System.currentTimeMillis() + "_" + CROP_FILE_NAME)
                             .build();
-                    Album.with(AlbumActivity.this).openCrop(uri, cropOutPutUri);
+                    Album.with(AlbumActivity.this,authority).openCrop(uri, cropOutPutUri);
                 } else {
                     selectedPhotos.clear();
                     selectedPhotos.add(uri.getPath());
@@ -273,7 +277,7 @@ public class AlbumActivity extends AppCompatActivity {
                             .buildUpon()
                             .appendPath(System.currentTimeMillis() + "_" + CROP_FILE_NAME)
                             .build();
-                    Album.with(AlbumActivity.this).openCrop(uri, cropOutPutUri);
+                    Album.with(AlbumActivity.this,authority).openCrop(uri, cropOutPutUri);
                 } else {
                     if (selectedPhotos.size() < maxChoice) {
                         selectedPhotos.add(uri.getPath());
@@ -311,6 +315,31 @@ public class AlbumActivity extends AppCompatActivity {
             albumListRecyclerView.setVisibility(View.GONE);
         }
     };
+
+
+    public void openCamera(File outputFile) {
+        if (PermissionUtil.checkPermission(this, Manifest.permission.CAMERA)) {
+            try {
+                Intent intent = new Intent();
+                //通过FileProvider创建一个content类型的Uri
+                Uri cameraOutPutUri = FileProviderCompat.getUriForFile(this, authority, outputFile);
+                FileProviderCompat.grantReadUriPermission(intent);
+                intent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, cameraOutPutUri);
+                if (intent.resolveActivity(getPackageManager()) != null) {
+                    startActivityForResult(intent, Album.REQUEST_CODE_CAMERA);
+                } else {
+                    Toast.makeText(this, "无法打开相机应用!", Toast.LENGTH_SHORT).show();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                Toast.makeText(this, "无法打开相机应用!", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            PermissionUtil.requestPermission(this, Manifest.permission.CAMERA);
+            Toast.makeText(this, R.string.no_camera_permission, Toast.LENGTH_SHORT).show();
+        }
+    }
 
 
     @Override

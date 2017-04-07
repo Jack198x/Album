@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">AlbumExample</string>
+    <string name="album">cn.jack.album.example</string>
 </resources>

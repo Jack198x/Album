@@ -24,6 +24,7 @@ import cn.jack.album.util.AlbumImageLoader;
 public class AlbumGridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private static final int TYPE_SINGLE_CHOOSE = 1;
+    private static final String fileCamera = "camera";
 
     private static final int TYPE_CAMERA = 0x0001;
     private static final int TYPE_ITEM = 0x0002;
@@ -31,29 +32,24 @@ public class AlbumGridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     private ArrayList<Uri> uris;
     private Activity activity;
     private OnItemClickListener listener = null;
-    private boolean enableCamera;
     private int maxChoose;
     private Set<Uri> uriSet = new HashSet<>();
 
 
-    public AlbumGridAdapter(Activity activity, ArrayList<Uri> uris, boolean enableCamera) {
-        this(activity, uris, enableCamera, 1);
-    }
-
-    public AlbumGridAdapter(Activity activity, ArrayList<Uri> uris, boolean enableCamera, int maxChoose) {
+    public AlbumGridAdapter(Activity activity, ArrayList<Uri> uris, int maxChoose) {
         super();
         this.maxChoose = maxChoose;
         this.activity = activity;
-        this.enableCamera = enableCamera;
         this.uris = uris;
-        if (enableCamera) {
-            this.uris.add(0, Uri.EMPTY);
-        }
     }
 
     @Override
     public int getItemViewType(int position) {
-        return (enableCamera && position == 0) ? TYPE_CAMERA : TYPE_ITEM;
+        if (position == 0 && uris.get(0).getHost().equals(fileCamera)) {
+            return TYPE_CAMERA;
+        } else {
+            return TYPE_ITEM;
+        }
     }
 
     @Override

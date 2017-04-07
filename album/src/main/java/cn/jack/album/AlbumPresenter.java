@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v7.util.DiffUtil;
+import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -56,6 +57,7 @@ public class AlbumPresenter {
         protected ArrayList<Uri> doInBackground(String... albumId) {
             ArrayList<Uri> list = new ArrayList<>();
             if (albumId[0].equals(AlbumMediaScanner.ALBUM_ID_ALL_PHOTOS)) {
+                list.add(Uri.parse("http://camera"));
                 list.addAll(AlbumMediaScanner.getAllPhotos(view));
             } else {
                 list.addAll(AlbumMediaScanner.getPhotosByAlbumId(view, albumId[0]));
