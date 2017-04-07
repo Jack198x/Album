@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="holder_color">#2B2B2B</color>
+
+    <color name="toolbar_icon_color">#1B1B1B</color>
+    <color name="toolbar_title_color">#1B1B1B</color>
+    <color name="color_control_highlight">#1A000000</color>
+    <color name="color_control_highlight_white">#66FFFFFF</color>
+</resources>

@@ -1,0 +1,5 @@
+<resources>
+    <string name="all_photos">全部照片</string>
+    <string name="no_storage_permission">无相册访问权限</string>
+    <string name="no_camera_permission">无相机访问权限</string>
+</resources>

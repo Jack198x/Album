@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="AlbumTheme" parent="Theme.AppCompat.Light.NoActionBar"/>
+
+
+    <!-- toolbar title text size. -->
+    <style name="Toolbar.TitleTextStyle" parent="TextAppearance.AppCompat.Title">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textColor">@color/toolbar_title_color</item>
+    </style>
+
+    <style name="ToolbarThemeOverlay" parent="ThemeOverlay.AppCompat.ActionBar">
+        <!-- toolbar text color. -->
+        <item name="android:textColorPrimary">@color/toolbar_title_color</item>
+        <!-- toolbar icon color. -->
+        <item name="colorControlNormal">@color/toolbar_icon_color</item>
+        <!-- toolbar click ripple color. -->
+        <item name="colorControlHighlight">@color/color_control_highlight</item>
+        <!-- toolbar text size. menu text and so on-->
+        <item name="android:textSize">14sp</item>
+        <!-- toolbar text style. -->
+        <item name="android:textStyle">normal</item>
+    </style>
+
+</resources>
