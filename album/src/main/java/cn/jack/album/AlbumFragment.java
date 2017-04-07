@@ -31,6 +31,9 @@ public class AlbumFragment extends Fragment {
 
 
     private void handleActivityResult(int requestCode, int resultCode, Intent data) {
+        if (albumListener == null) {
+            return;
+        }
         if (requestCode == Album.REQUEST_CODE_CAMERA) {
             if (resultCode == Activity.RESULT_OK) {
                 albumListener.onCameraFinish();
