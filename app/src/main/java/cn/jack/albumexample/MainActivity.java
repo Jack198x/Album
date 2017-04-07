@@ -29,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
                 cameraOutPutFile = new File(FileUtil.getSystemPicturePath(), System.currentTimeMillis() + "_" + "test.jpg");
                 Album.with(MainActivity.this)
                         .setListener(listener)
+                        .enableCamera(true)
                         .maxChoice(1)
                         .open();
 

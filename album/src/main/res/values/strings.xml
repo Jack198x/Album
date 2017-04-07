@@ -5,4 +5,5 @@
     <string name="all_photos">All Photos</string>
     <string name="no_storage_permission">read external storage permission denied</string>
     <string name="no_camera_permission">camera permission denied</string>
+    <string name="confirm">Confirm</string>
 </resources>

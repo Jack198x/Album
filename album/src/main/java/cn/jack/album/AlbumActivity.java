@@ -12,6 +12,8 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -47,7 +49,6 @@ public class AlbumActivity extends AppCompatActivity {
     private AlbumGridAdapter albumGridAdapter;
     private AlbumListAdapter albumListAdapter;
 
-    private Toolbar toolbar;
 
     private AlbumPresenter presenter;
 
@@ -68,22 +69,19 @@ public class AlbumActivity extends AppCompatActivity {
         maxChoice = intent.getIntExtra("maxLimit", TYPE_SINGLE_CHOOSE);
         albumGridRecyclerView = (RecyclerView) findViewById(R.id.albumGridRecyclerView);
         albumListRecyclerView = (RecyclerView) findViewById(R.id.albumListRecyclerView);
-//        toolbarNavigationButton = (ImageButton) findViewById(R.id.toolbarNavigationButton);
-//        toolbarTitleTextView = (TextView) findViewById(R.id.toolbarTitleTextView);
-//        toolbarMenuButton = (Button) findViewById(R.id.toolbarMenuButton);
         albumListButton = (Button) findViewById(R.id.albumListButton);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         albumListRecyclerView.setLayoutManager(linearLayoutManager);
         albumGridRecyclerView.setLayoutManager(new GridLayoutManager(this, SPAN_COUNT));
         albumGridRecyclerView.addItemDecoration(new AlbumSpacesItemDecoration(2));
-        toolbar.setTitle(intent.getStringExtra("title"));
-        if (maxChoice > 1) {
-            toolbar.setSubtitle("0/" + maxChoice);
-        }
 
-//        toolbarTitleTextView.setText(intent.getStringExtra("title"));
-//        toolbarMenuButton.setVisibility(maxChoice == 1 ? View.INVISIBLE : View.VISIBLE);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle(intent.getStringExtra("title"));
+            if (maxChoice > 1) {
+                getSupportActionBar().setSubtitle("0/" + maxChoice);
+            }
+        }
     }
 
 
@@ -98,49 +96,56 @@ public class AlbumActivity extends AppCompatActivity {
     }
 
     protected void setListeners() {
-//        toolbarNavigationButton.setOnClickListener(listener);
-//        toolbarMenuButton.setOnClickListener(listener);
         albumListButton.setOnClickListener(listener);
         albumGridAdapter.setOnItemClickListener(gridClickListener);
     }
 
 
     private void initToolbar() {
-        if (toolbar == null) {
-            toolbar = (Toolbar) findViewById(R.id.toolbar);
-            if (toolbar != null) {
-                setSupportActionBar(toolbar);
-                toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        onBackPressed();
-                    }
-                });
-            }
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        if (toolbar != null) {
+            setSupportActionBar(toolbar);
+            toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onBackPressed();
+                }
+            });
         }
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        invalidateOptionsMenu();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        if (maxChoice > 1) {
+            getMenuInflater().inflate(R.menu.menu_album_confirm, menu);
+        }
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_confirm) {
+            if (selectedPhotos.size() > 0) {
+                Intent intent = new Intent();
+                intent.putStringArrayListExtra("selectedPhotos", selectedPhotos);
+                setResult(Album.RESULT_OK, intent);
+            }
+            finish();
+        }
+        return super.onOptionsItemSelected(item);
     }
 
 
     private View.OnClickListener listener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-//            if (v.getId() == R.id.toolbarNavigationButton) {
-//                if (albumListRecyclerView.getVisibility() == View.VISIBLE) {
-//                    albumListRecyclerView.setVisibility(View.GONE);
-//                } else {
-//                    setResult(Album.RESULT_CANCEL);
-//                    AlbumActivity.this.finish();
-//                }
-//            }
-
-//            if (v.getId() == R.id.toolbarMenuButton) {
-//                if (selectedPhotos.size() > 0) {
-//                    Intent intent = new Intent();
-//                    intent.putStringArrayListExtra("selectedPhotos", selectedPhotos);
-//                    setResult(Album.RESULT_OK, intent);
-//                }
-//                finish();
-//            }
             if (v.getId() == R.id.albumListButton) {
                 if (presenter.getAlbums().size() > 0) {
                     if (albumListRecyclerView.getVisibility() == View.VISIBLE) {
@@ -237,6 +242,7 @@ public class AlbumActivity extends AppCompatActivity {
                 cameraOutputFile = new File(FileUtil.getSystemPicturePath(), System.currentTimeMillis() + "_" + CAMERA_FILE_NAME);
                 Album.with(AlbumActivity.this).openCamera(cameraOutputFile);
             } else {
+                PermissionUtil.requestPermission(AlbumActivity.this, Manifest.permission.CAMERA);
                 Toast.makeText(AlbumActivity.this, R.string.no_camera_permission, Toast.LENGTH_SHORT).show();
             }
         }
@@ -274,7 +280,10 @@ public class AlbumActivity extends AppCompatActivity {
                     } else {
                         Toast.makeText(AlbumActivity.this, "您已选择" + maxChoice + "张照片了！", Toast.LENGTH_SHORT).show();
                     }
-                    toolbar.setSubtitle(selectedPhotos.size() + "/" + maxChoice);
+                    if (getSupportActionBar() != null) {
+                        getSupportActionBar().setSubtitle(selectedPhotos.size() + "/" + maxChoice);
+                    }
+
                 }
             }
         }
@@ -284,7 +293,9 @@ public class AlbumActivity extends AppCompatActivity {
             if (selectedPhotos.size() > 0 && selectedPhotos.contains(uri.getPath())) {
                 selectedPhotos.remove(uri.getPath());
             }
-            toolbar.setSubtitle(selectedPhotos.size() + "/" + maxChoice);
+            if (getSupportActionBar() != null) {
+                getSupportActionBar().setSubtitle(selectedPhotos.size() + "/" + maxChoice);
+            }
         }
     };
 

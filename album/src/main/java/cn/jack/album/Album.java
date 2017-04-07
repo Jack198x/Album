@@ -99,6 +99,7 @@ public class Album {
         if (PermissionUtil.checkPermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE)) {
             startAlbumActivityForResult();
         } else {
+            PermissionUtil.requestPermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE);
             Toast.makeText(activity, R.string.no_storage_permission, Toast.LENGTH_SHORT).show();
         }
 
@@ -114,6 +115,7 @@ public class Album {
         if (PermissionUtil.checkPermission(activity, Manifest.permission.CAMERA)) {
             startCameraActivityForResult(outputFile);
         } else {
+            PermissionUtil.requestPermission(activity, Manifest.permission.CAMERA);
             Toast.makeText(activity, R.string.no_camera_permission, Toast.LENGTH_SHORT).show();
         }
     }
@@ -129,6 +131,7 @@ public class Album {
         if (PermissionUtil.checkPermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE)) {
             startCropActivityForResult(cropInputFile, cropOutputUri);
         } else {
+            PermissionUtil.requestPermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE);
             Toast.makeText(activity, R.string.no_storage_permission, Toast.LENGTH_SHORT).show();
         }
     }
@@ -143,6 +146,7 @@ public class Album {
         if (PermissionUtil.checkPermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE)) {
             startCropActivityForResult(new File(cropInputUri.getPath()), cropOutputUri);
         } else {
+            PermissionUtil.requestPermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE);
             Toast.makeText(activity, R.string.no_storage_permission, Toast.LENGTH_SHORT).show();
         }
     }
