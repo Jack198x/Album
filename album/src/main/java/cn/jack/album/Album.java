@@ -188,8 +188,15 @@ public class Album {
                 intent.setDataAndType(inputUri, "image/*");
                 intent.putExtra("crop", true);
                 intent.putExtra("scale", true);
-                intent.putExtra("aspectX", DEFAULT_ASPECT);
-                intent.putExtra("aspectY", DEFAULT_ASPECT);
+                if (android.os.Build.MANUFACTURER.contains("HUAWEI")) {// 华为特殊处理 不然会显示圆
+                    intent.putExtra("aspectX", 9998);
+                    intent.putExtra("aspectY", 9999);
+
+                } else {
+                    intent.putExtra("aspectX", DEFAULT_ASPECT);
+                    intent.putExtra("aspectY", DEFAULT_ASPECT);
+
+                }
                 intent.putExtra("outputX", DEFAULT_OUTPUT);
                 intent.putExtra("outputY", DEFAULT_OUTPUT);
                 intent.putExtra("return-data", false);
@@ -268,8 +275,15 @@ public class Album {
             intent.setDataAndType(inputUri, "image/*");
             intent.putExtra("crop", true);
             intent.putExtra("scale", true);
-            intent.putExtra("aspectX", DEFAULT_ASPECT);
-            intent.putExtra("aspectY", DEFAULT_ASPECT);
+            if (android.os.Build.MANUFACTURER.contains("HUAWEI")) {// 华为特殊处理 不然会显示圆
+                intent.putExtra("aspectX", 9998);
+                intent.putExtra("aspectY", 9999);
+
+            } else {
+                intent.putExtra("aspectX", DEFAULT_ASPECT);
+                intent.putExtra("aspectY", DEFAULT_ASPECT);
+
+            }
             intent.putExtra("outputX", DEFAULT_OUTPUT);
             intent.putExtra("outputY", DEFAULT_OUTPUT);
             intent.putExtra("return-data", false);

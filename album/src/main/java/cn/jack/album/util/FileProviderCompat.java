@@ -34,6 +34,7 @@ public class FileProviderCompat {
         //添加这一句表示对目标应用临时授权该Uri所代表的文件
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
         }
     }
 }

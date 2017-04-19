@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <paths>
-        <cache-path
-            name="user_cache"
-            path="" />
-    </paths>
+
+    <!--<external-cache-path name="name" path="path" />对应Context.getExternalCacheDir()得到的目录-->
+    <!--<external-files-path name="name" path="path" />对应Context#getExternalFilesDir(String) Context.getExternalFilesDir(null)-->
+    <!--<external-path name="name" path="path" /> 对应Environment.getExternalStorageDirectory()-->
+    <!--<cache-path name="name" path="path" />对应 getCacheDir()得到的目录-->
+    <!--<files-path name="name" path="path" />对应Context.getFilesDir() 目录-->
     <paths>
         <root-path
             name="support_camera_photos"
