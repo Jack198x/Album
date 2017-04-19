@@ -39,5 +39,5 @@ in your manifest
 
 ## Setup
 ```groovy
-compile 'cn.jack:album:1.0.3'
+compile 'cn.jack:album:1.0.6'
 ```
