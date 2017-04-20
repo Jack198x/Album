@@ -10,6 +10,10 @@ import java.io.File;
 
 public class FileUtil {
     public static File getSystemPicturePath() {
-        return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+        File systemPicturePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+        if (!systemPicturePath.exists()) {
+            boolean result = systemPicturePath.mkdirs();
+        }
+        return systemPicturePath;
     }
 }

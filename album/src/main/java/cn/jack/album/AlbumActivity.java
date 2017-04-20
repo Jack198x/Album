@@ -19,7 +19,6 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 
 import cn.jack.album.util.FileUtil;
@@ -194,19 +193,11 @@ public class AlbumActivity extends AppCompatActivity {
                     scanFile(cameraOutputFile);
                     if (enableCrop) {
                         String appendPath = System.currentTimeMillis() + "_" + CROP_FILE_NAME;
-                        File parent = FileUtil.getSystemPicturePath();
-                        if (!parent.exists()) {
-                            boolean result = parent.mkdirs();
-                        }
-                        File cropOutputFile = new File(FileUtil.getSystemPicturePath(), appendPath);
-                        cropOutPutUri = Uri.fromFile(cropOutputFile);
-                        if (!cropOutputFile.exists()) {
-                            try {
-                                boolean result = cropOutputFile.createNewFile();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        }
+                        cropOutPutUri = Uri
+                                .fromFile(FileUtil.getSystemPicturePath())
+                                .buildUpon()
+                                .appendPath(appendPath)
+                                .build();
                         Album.with(AlbumActivity.this, authority).activityOpenCrop(cameraOutputFile, cropOutPutUri);
                     }
                 }
@@ -251,7 +242,8 @@ public class AlbumActivity extends AppCompatActivity {
         @Override
         public void onCameraClick() {
             if (PermissionUtil.checkPermission(AlbumActivity.this, Manifest.permission.CAMERA)) {
-                cameraOutputFile = new File(FileUtil.getSystemPicturePath(), System.currentTimeMillis() + "_" + CAMERA_FILE_NAME);
+                String appendPath = System.currentTimeMillis() + "_" + CAMERA_FILE_NAME;
+                cameraOutputFile = new File(FileUtil.getSystemPicturePath(), appendPath);
                 Album.with(AlbumActivity.this, authority).activityOpenCamera(cameraOutputFile);
             } else {
                 PermissionUtil.requestPermission(AlbumActivity.this, Manifest.permission.CAMERA);
@@ -263,10 +255,11 @@ public class AlbumActivity extends AppCompatActivity {
         public void onItemClick(Uri uri) {
             if (maxChoice == TYPE_SINGLE_CHOOSE) {
                 if (enableCrop) {
+                    String appendPath = System.currentTimeMillis() + "_" + CROP_FILE_NAME;
                     cropOutPutUri = Uri
                             .fromFile(FileUtil.getSystemPicturePath())
                             .buildUpon()
-                            .appendPath(System.currentTimeMillis() + "_" + CROP_FILE_NAME)
+                            .appendPath(appendPath)
                             .build();
                     Album.with(AlbumActivity.this, authority).activityOpenCrop(uri, cropOutPutUri);
                 } else {

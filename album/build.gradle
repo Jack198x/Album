@@ -8,8 +8,8 @@ android {
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 25
-        versionCode 108
-        versionName "1.0.8"
+        versionCode 109
+        versionName "1.0.9"
     }
     buildTypes {
         release {
@@ -43,7 +43,7 @@ publish {
     userOrg = 'jackcn'      //bintray注册的用户名
     groupId = 'cn.jack'         //compile引用时的第1部分groupId
     artifactId = 'album'     //compile引用时的第2部分项目名
-    publishVersion = '1.0.8'    //compile引用时的第3部分版本号
+    publishVersion = '1.0.9'    //compile引用时的第3部分版本号
     desc = 'Android Album'
     website = 'https://github.com/Jack198x/Album'
 }
