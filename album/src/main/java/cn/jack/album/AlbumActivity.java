@@ -194,12 +194,12 @@ public class AlbumActivity extends AppCompatActivity {
                     scanFile(cameraOutputFile);
                     if (enableCrop) {
                         String appendPath = System.currentTimeMillis() + "_" + CROP_FILE_NAME;
-                        cropOutPutUri = Uri
-                                .fromFile(FileUtil.getSystemPicturePath())
-                                .buildUpon()
-                                .appendPath(appendPath)
-                                .build();
+                        File parent = FileUtil.getSystemPicturePath();
+                        if (!parent.exists()) {
+                            boolean result = parent.mkdirs();
+                        }
                         File cropOutputFile = new File(FileUtil.getSystemPicturePath(), appendPath);
+                        cropOutPutUri = Uri.fromFile(cropOutputFile);
                         if (!cropOutputFile.exists()) {
                             try {
                                 boolean result = cropOutputFile.createNewFile();
