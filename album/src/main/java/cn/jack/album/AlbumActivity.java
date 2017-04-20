@@ -19,6 +19,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import cn.jack.album.util.FileUtil;
@@ -93,7 +94,7 @@ public class AlbumActivity extends AppCompatActivity {
         albumListAdapter = new AlbumListAdapter(AlbumActivity.this, presenter.getAlbums(), listClickListener);
         albumGridRecyclerView.setAdapter(albumGridAdapter);
         albumListRecyclerView.setAdapter(albumListAdapter);
-        presenter.loadAlbumPhotos(AlbumMediaScanner.ALBUM_ID_ALL_PHOTOS,enableCamera);
+        presenter.loadAlbumPhotos(AlbumMediaScanner.ALBUM_ID_ALL_PHOTOS, enableCamera);
         presenter.loadAlbumList();
     }
 
@@ -192,12 +193,21 @@ public class AlbumActivity extends AppCompatActivity {
                 } else {
                     scanFile(cameraOutputFile);
                     if (enableCrop) {
+                        String appendPath = System.currentTimeMillis() + "_" + CROP_FILE_NAME;
                         cropOutPutUri = Uri
                                 .fromFile(FileUtil.getSystemPicturePath())
                                 .buildUpon()
-                                .appendPath(System.currentTimeMillis() + "_" + CROP_FILE_NAME)
+                                .appendPath(appendPath)
                                 .build();
-                        Album.with(AlbumActivity.this,authority).activityOpenCrop(cameraOutputFile, cropOutPutUri);
+                        File cropOutputFile = new File(FileUtil.getSystemPicturePath(), appendPath);
+                        if (!cropOutputFile.exists()) {
+                            try {
+                                boolean result = cropOutputFile.createNewFile();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        Album.with(AlbumActivity.this, authority).activityOpenCrop(cameraOutputFile, cropOutPutUri);
                     }
                 }
             }
@@ -225,7 +235,7 @@ public class AlbumActivity extends AppCompatActivity {
         AlbumMediaScanner.scanFile(AlbumActivity.this, scanFile, new AlbumCallback<String>() {
             @Override
             public void onCompleted(String object) {
-                presenter.loadAlbumPhotos(AlbumMediaScanner.ALBUM_ID_ALL_PHOTOS,enableCamera);
+                presenter.loadAlbumPhotos(AlbumMediaScanner.ALBUM_ID_ALL_PHOTOS, enableCamera);
             }
 
             @Override
@@ -242,7 +252,7 @@ public class AlbumActivity extends AppCompatActivity {
         public void onCameraClick() {
             if (PermissionUtil.checkPermission(AlbumActivity.this, Manifest.permission.CAMERA)) {
                 cameraOutputFile = new File(FileUtil.getSystemPicturePath(), System.currentTimeMillis() + "_" + CAMERA_FILE_NAME);
-                Album.with(AlbumActivity.this,authority).activityOpenCamera(cameraOutputFile);
+                Album.with(AlbumActivity.this, authority).activityOpenCamera(cameraOutputFile);
             } else {
                 PermissionUtil.requestPermission(AlbumActivity.this, Manifest.permission.CAMERA);
                 Toast.makeText(AlbumActivity.this, R.string.no_camera_permission, Toast.LENGTH_SHORT).show();
@@ -258,7 +268,7 @@ public class AlbumActivity extends AppCompatActivity {
                             .buildUpon()
                             .appendPath(System.currentTimeMillis() + "_" + CROP_FILE_NAME)
                             .build();
-                    Album.with(AlbumActivity.this,authority).activityOpenCrop(uri, cropOutPutUri);
+                    Album.with(AlbumActivity.this, authority).activityOpenCrop(uri, cropOutPutUri);
                 } else {
                     selectedPhotos.clear();
                     selectedPhotos.add(uri.getPath());
@@ -297,12 +307,11 @@ public class AlbumActivity extends AppCompatActivity {
             if (!albumId.equals(currentAlbumId)) {
                 currentAlbumId = albumId;
                 albumListButton.setText(albumName);
-                presenter.loadAlbumPhotos(currentAlbumId,enableCamera);
+                presenter.loadAlbumPhotos(currentAlbumId, enableCamera);
             }
             albumListRecyclerView.setVisibility(View.GONE);
         }
     };
-
 
 
     @Override
