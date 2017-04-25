@@ -190,7 +190,7 @@ public class AlbumActivity extends AppCompatActivity {
                         Toast.makeText(AlbumActivity.this, "您已选择" + maxChoice + "张照片了！", Toast.LENGTH_SHORT).show();
                     }
                 } else {
-                    scanFile(cameraOutputFile);
+                    presenter.scanFile(cameraOutputFile);
                     if (enableCrop) {
                         String appendPath = System.currentTimeMillis() + "_" + CROP_FILE_NAME;
                         cropOutPutUri = Uri
@@ -222,19 +222,19 @@ public class AlbumActivity extends AppCompatActivity {
     }
 
 
-    private void scanFile(File scanFile) {
-        AlbumMediaScanner.scanFile(AlbumActivity.this, scanFile, new AlbumCallback<String>() {
-            @Override
-            public void onCompleted(String object) {
-                presenter.loadAlbumPhotos(AlbumMediaScanner.ALBUM_ID_ALL_PHOTOS, enableCamera);
-            }
-
-            @Override
-            public void onFailed(String str) {
-
-            }
-        });
-    }
+//    private void scanFile(File scanFile) {
+//        AlbumMediaScanner.scanFile(AlbumActivity.this, scanFile, new AlbumCallback<String>() {
+//            @Override
+//            public void onCompleted(String object) {
+//                presenter.loadAlbumPhotos(AlbumMediaScanner.ALBUM_ID_ALL_PHOTOS, enableCamera);
+//            }
+//
+//            @Override
+//            public void onFailed(String str) {
+//
+//            }
+//        });
+//    }
 
 
     private AlbumGridAdapter.OnItemClickListener gridClickListener = new AlbumGridAdapter.OnItemClickListener() {
@@ -306,6 +306,12 @@ public class AlbumActivity extends AppCompatActivity {
         }
     };
 
+
+    @Override
+    protected void onDestroy() {
+        presenter.destroy();
+        super.onDestroy();
+    }
 
     @Override
     public void onBackPressed() {

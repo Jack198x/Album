@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v7.util.DiffUtil;
 
+import java.io.File;
 import java.util.ArrayList;
 
 /**
@@ -21,7 +22,7 @@ public class AlbumPresenter {
     private DiffUtil.DiffResult photoDiffResult;
     private DiffUtil.DiffResult albumDiffResult;
 
-    private boolean enableCamera=false;
+    private boolean enableCamera = false;
 
     public AlbumPresenter(AlbumActivity view) {
         this.view = view;
@@ -38,8 +39,8 @@ public class AlbumPresenter {
         return photos;
     }
 
-    public void loadAlbumPhotos(String albumId,boolean enableCamera) {
-        this.enableCamera=enableCamera;
+    public void loadAlbumPhotos(String albumId, boolean enableCamera) {
+        this.enableCamera = enableCamera;
         new LoadAlbumPhotosTask().execute(albumId);
     }
 
@@ -59,7 +60,7 @@ public class AlbumPresenter {
         protected ArrayList<Uri> doInBackground(String... albumId) {
             ArrayList<Uri> list = new ArrayList<>();
             if (albumId[0].equals(AlbumMediaScanner.ALBUM_ID_ALL_PHOTOS)) {
-                if(enableCamera){
+                if (enableCamera) {
                     list.add(Uri.parse("http://camera"));
                 }
                 list.addAll(AlbumMediaScanner.getAllPhotos(view));
@@ -79,13 +80,34 @@ public class AlbumPresenter {
         }
     }
 
+    public void scanFile(File scanFile) {
+        if (view == null) {
+            return;
+        }
+        AlbumMediaScanner.scanFile(view, scanFile, new AlbumCallback<String>() {
+            @Override
+            public void onCompleted(String object) {
+                if (view != null) {
+                    loadAlbumPhotos(AlbumMediaScanner.ALBUM_ID_ALL_PHOTOS, enableCamera);
+                }
+            }
+
+            @Override
+            public void onFailed(String str) {
+
+            }
+        });
+    }
+
 
     private class LoadAlbumListTask extends AsyncTask<Void, Void, ArrayList<AlbumModel>> {
 
         @Override
         protected ArrayList<AlbumModel> doInBackground(Void... albumId) {
             ArrayList<AlbumModel> list = new ArrayList<>();
-            list.addAll(AlbumMediaScanner.getAllAlbums(view));
+            if (view != null) {
+                list.addAll(AlbumMediaScanner.getAllAlbums(view));
+            }
             albumDiffResult =
                     DiffUtil.calculateDiff(new AlbumDiffCallback(albums, list), true);
             return list;
@@ -94,7 +116,13 @@ public class AlbumPresenter {
 
         @Override
         protected void onPostExecute(ArrayList<AlbumModel> result) {
-            view.refreshAlbumList(albumDiffResult, result);
+            if (view != null) {
+                view.refreshAlbumList(albumDiffResult, result);
+            }
         }
+    }
+
+    public void destroy() {
+        view = null;
     }
 }
