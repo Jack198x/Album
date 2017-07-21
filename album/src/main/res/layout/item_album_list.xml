@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <ImageView
+        <cn.jack.glideimageview.GlideImageView
             android:id="@+id/albumListItemCoverImageView"
             android:layout_width="74dp"
             android:layout_height="74dp"

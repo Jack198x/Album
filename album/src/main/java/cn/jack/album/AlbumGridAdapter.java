@@ -8,14 +8,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-import cn.jack.album.util.AlbumImageLoader;
+import cn.jack.glideimageview.GlideImageView;
 
 
 /**
@@ -83,11 +82,13 @@ public class AlbumGridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         } else {
             final GridViewHolder gridViewHolder = (GridViewHolder) holder;
             final Uri uri = uris.get(position);
-            AlbumImageLoader.with(activity, uri)
-                    .placeholder(R.color.holder_color)
-                    .centerCrop()
-                    .resize(300, 300)
-                    .into(gridViewHolder.albumGridItemImageView);
+            gridViewHolder.albumGridItemImageView.centerCrop();
+            gridViewHolder.albumGridItemImageView.setImageUri(uri);
+//            AlbumImageLoader.with(activity, uri)
+//                    .placeholder(R.color.holder_color)
+//                    .centerCrop()
+//                    .resize(300, 300)
+//                    .into(gridViewHolder.albumGridItemImageView);
             if (maxChoose > TYPE_SINGLE_CHOOSE) {
                 gridViewHolder.albumGridItemCheckBox.setVisibility(View.VISIBLE);
                 gridViewHolder.albumGridItemCheckBox.setChecked(uriSet.contains(uri));
@@ -129,13 +130,13 @@ public class AlbumGridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
 
     private class GridViewHolder extends RecyclerView.ViewHolder {
-        ImageView albumGridItemImageView;
+        GlideImageView albumGridItemImageView;
         CheckBox albumGridItemCheckBox;
         Button albumGridItemButton;
 
         GridViewHolder(View view) {
             super(view);
-            this.albumGridItemImageView = (ImageView) view.findViewById(R.id.albumGridItemImageView);
+            this.albumGridItemImageView = (GlideImageView) view.findViewById(R.id.albumGridItemImageView);
             this.albumGridItemCheckBox = (CheckBox) view.findViewById(R.id.albumGridItemCheckBox);
             this.albumGridItemButton = (Button) view.findViewById(R.id.albumGridItemButton);
         }

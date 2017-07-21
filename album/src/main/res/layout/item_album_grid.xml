@@ -4,9 +4,10 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <ImageView
+    <cn.jack.glideimageview.GlideImageView
         android:id="@+id/albumGridItemImageView"
         android:contentDescription="@string/image_desc"
+        support-app:placeholderImageResource="@color/holder_color"
         support-app:layout_aspectRatio="100%"
         support-app:layout_widthPercent="100%" />
 
