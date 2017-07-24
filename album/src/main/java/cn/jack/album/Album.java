@@ -21,11 +21,11 @@ import cn.jack.album.util.PermissionUtil;
 
 public class Album {
 
-    public static final int REQUEST_CODE_ALBUM = 0x1111;
-    public static final int REQUEST_CODE_CAMERA = 0x2222;
-    public static final int REQUEST_CODE_CROP = 0x3333;
-    public static final int RESULT_OK = 0x9999;
-    public static final int RESULT_CANCEL = 0x9998;
+    static final int REQUEST_CODE_ALBUM = 0x1111;
+    static final int REQUEST_CODE_CAMERA = 0x2222;
+    static final int REQUEST_CODE_CROP = 0x3333;
+    static final int RESULT_OK = 0x9999;
+    static final int RESULT_CANCEL = 0x9998;
 
     private static final String TAG = "AlbumFragment";
 
@@ -58,7 +58,6 @@ public class Album {
     public static Album with(Activity activity,String authority) {
         return new Album(activity,authority, "选择图片", false);
     }
-
 
     public Album title(String title) {
         this.title = TextUtils.isEmpty(title) ? "选择图片" : title;

@@ -6,4 +6,5 @@
     <color name="toolbar_title_color">#1B1B1B</color>
     <color name="color_control_highlight">#1A000000</color>
     <color name="color_control_highlight_white">#66FFFFFF</color>
+    <color name="divider_color">#F7F7F7</color>
 </resources>

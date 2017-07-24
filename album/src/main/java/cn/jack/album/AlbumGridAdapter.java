@@ -7,12 +7,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 import cn.jack.glideimageview.GlideImageView;
 
@@ -32,7 +30,7 @@ public class AlbumGridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     private Activity activity;
     private OnItemClickListener listener = null;
     private int maxChoose;
-    private Set<Uri> uriSet = new HashSet<>();
+    private List<Uri> uriSet = new ArrayList<>();
 
 
     public AlbumGridAdapter(Activity activity, ArrayList<Uri> uris, int maxChoose) {
@@ -84,16 +82,18 @@ public class AlbumGridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             final Uri uri = uris.get(position);
             gridViewHolder.albumGridItemImageView.centerCrop();
             gridViewHolder.albumGridItemImageView.setImageUri(uri);
-//            AlbumImageLoader.with(activity, uri)
-//                    .placeholder(R.color.holder_color)
-//                    .centerCrop()
-//                    .resize(300, 300)
-//                    .into(gridViewHolder.albumGridItemImageView);
             if (maxChoose > TYPE_SINGLE_CHOOSE) {
-                gridViewHolder.albumGridItemCheckBox.setVisibility(View.VISIBLE);
-                gridViewHolder.albumGridItemCheckBox.setChecked(uriSet.contains(uri));
+                gridViewHolder.albumGridItemCheckView.setVisibility(View.VISIBLE);
+                gridViewHolder.albumGridItemCheckView.setCountable(true);
+                if (uriSet.contains(uri)) {
+                    gridViewHolder.albumGridItemCheckView.setEnabled(true);
+                    gridViewHolder.albumGridItemCheckView.setCheckedNum(uriSet.indexOf(uri) + 1);
+                } else {
+                    gridViewHolder.albumGridItemCheckView.setCheckedNum(CheckView.UNCHECKED);
+                    gridViewHolder.albumGridItemCheckView.setEnabled(uriSet.size() < maxChoose);
+                }
             } else {
-                gridViewHolder.albumGridItemCheckBox.setVisibility(View.GONE);
+                gridViewHolder.albumGridItemCheckView.setVisibility(View.GONE);
             }
 
             gridViewHolder.albumGridItemButton.setOnClickListener(new View.OnClickListener() {
@@ -103,19 +103,21 @@ public class AlbumGridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                         if (maxChoose == TYPE_SINGLE_CHOOSE) {
                             listener.onItemClick(uri);
                         } else {
-                            if (gridViewHolder.albumGridItemCheckBox.isChecked()) {
-                                gridViewHolder.albumGridItemCheckBox.setChecked(false);
-                                listener.onItemCancelClick(uri);
+                            if (uriSet.contains(uri)) {
                                 uriSet.remove(uri);
+                                listener.onItemCancelClick(uri);
+                                gridViewHolder.albumGridItemCheckView.setCheckedNum(CheckView.UNCHECKED);
+
                             } else {
                                 if (uriSet.size() < maxChoose) {
-                                    listener.onItemClick(uri);
-                                    gridViewHolder.albumGridItemCheckBox.setChecked(!gridViewHolder.albumGridItemCheckBox.isChecked());
                                     uriSet.add(uri);
+                                    listener.onItemClick(uri);
+                                    gridViewHolder.albumGridItemCheckView.setCheckedNum(uriSet.indexOf(uri) + 1);
                                 } else {
                                     Toast.makeText(activity, "您已经选择了" + maxChoose + "张照片了！", Toast.LENGTH_SHORT).show();
                                 }
                             }
+                            notifyDataSetChanged();
                         }
                     }
                 }
@@ -131,13 +133,13 @@ public class AlbumGridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     private class GridViewHolder extends RecyclerView.ViewHolder {
         GlideImageView albumGridItemImageView;
-        CheckBox albumGridItemCheckBox;
+        CheckView albumGridItemCheckView;
         Button albumGridItemButton;
 
         GridViewHolder(View view) {
             super(view);
             this.albumGridItemImageView = (GlideImageView) view.findViewById(R.id.albumGridItemImageView);
-            this.albumGridItemCheckBox = (CheckBox) view.findViewById(R.id.albumGridItemCheckBox);
+            this.albumGridItemCheckView = (CheckView) view.findViewById(R.id.albumGridItemCheckView);
             this.albumGridItemButton = (Button) view.findViewById(R.id.albumGridItemButton);
         }
     }

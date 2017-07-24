@@ -76,13 +76,11 @@ public class AlbumActivity extends AppCompatActivity {
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         albumListRecyclerView.setLayoutManager(linearLayoutManager);
         albumGridRecyclerView.setLayoutManager(new GridLayoutManager(this, SPAN_COUNT));
-        albumGridRecyclerView.addItemDecoration(new AlbumSpacesItemDecoration(2));
+        int spacing = getResources().getDimensionPixelSize(R.dimen.media_grid_spacing);
+        albumGridRecyclerView.addItemDecoration(new GridItemDecoration(SPAN_COUNT, spacing, false));
 
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle(intent.getStringExtra("title"));
-            if (maxChoice > 1) {
-                getSupportActionBar().setSubtitle("0/" + maxChoice);
-            }
         }
     }
 
@@ -276,9 +274,6 @@ public class AlbumActivity extends AppCompatActivity {
                 } else {
                     Toast.makeText(AlbumActivity.this, "您已选择" + maxChoice + "张照片了！", Toast.LENGTH_SHORT).show();
                 }
-                if (getSupportActionBar() != null) {
-                    getSupportActionBar().setSubtitle(selectedPhotos.size() + "/" + maxChoice);
-                }
             }
         }
 
@@ -286,9 +281,6 @@ public class AlbumActivity extends AppCompatActivity {
         public void onItemCancelClick(Uri uri) {
             if (selectedPhotos.size() > 0 && selectedPhotos.contains(uri.getPath())) {
                 selectedPhotos.remove(uri.getPath());
-            }
-            if (getSupportActionBar() != null) {
-                getSupportActionBar().setSubtitle(selectedPhotos.size() + "/" + maxChoice);
             }
         }
     };

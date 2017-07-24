@@ -29,9 +29,9 @@ public class MainActivity extends AppCompatActivity {
                 cameraOutPutFile = new File(FileUtil.getSystemPicturePath(), System.currentTimeMillis() + "_" + "test.jpg");
                 Album.with(MainActivity.this, getString(R.string.album))
                         .title("Album")
-                        .enableCrop(true)
+                        .enableCrop(false)
                         .enableCamera(true)
-                        .maxChoice(1)
+                        .maxChoice(10)
                         .setListener(new AlbumListener() {
                             @Override
                             public void onPhotosSelected(ArrayList<String> photos) {
