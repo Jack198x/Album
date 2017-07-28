@@ -1,16 +1,14 @@
 package cn.jack.albumexample;
 
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageView;
 
 import java.io.File;
-import java.util.ArrayList;
 
-import cn.jack.album.Album;
-import cn.jack.album.AlbumListener;
+import cn.jack.album.PictureModel;
+import cn.jack.album.util.CameraUtil;
 import cn.jack.album.util.FileUtil;
 
 public class MainActivity extends AppCompatActivity {
@@ -27,23 +25,24 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 cameraOutPutFile = new File(FileUtil.getSystemPicturePath(), System.currentTimeMillis() + "_" + "test.jpg");
-                Album.with(MainActivity.this, getString(R.string.album))
-                        .title("Album")
-                        .enableCrop(false)
-                        .enableCamera(true)
-                        .maxChoice(10)
-                        .setListener(new AlbumListener() {
-                            @Override
-                            public void onPhotosSelected(ArrayList<String> photos) {
-                                imageView.setImageURI(Uri.parse(photos.get(0)));
-                            }
-
-                            @Override
-                            public void onError(String error) {
-
-                            }
-                        })
-                        .open();
+                CameraUtil.camera(MainActivity.this, getString(R.string.album), cameraOutPutFile, new CameraUtil.CameraListener() {
+                    @Override
+                    public void onCamera(PictureModel cameraPicture) {
+                        imageView.setImageURI(cameraPicture.getUri());
+                    }
+                });
+//                Album.with(MainActivity.this, getString(R.string.album))
+//                        .title("Album")
+//                        .enableCrop(true)
+//                        .enableCamera(false)
+//                        .maxChoice(2)
+//                        .setListener(new PictureSelectListener() {
+//                            @Override
+//                            public void onPictureSelect(ArrayList<PictureModel> pictures) {
+//                                imageView.setImageURI(pictures.get(0).getUri());
+//                            }
+//                        })
+//                        .open();
 
             }
         });

@@ -1,55 +1,38 @@
 package cn.jack.album;
 
-import android.Manifest;
-import android.app.Activity;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
-import java.io.File;
-import java.util.ArrayList;
-
-import cn.jack.album.util.FileUtil;
-import cn.jack.album.util.PermissionUtil;
+import cn.jack.album.data.AlbumData;
+import cn.jack.album.presenter.AlbumPresenter;
+import cn.jack.album.util.Code;
+import cn.jack.album.view.AlbumAdapter;
+import cn.jack.album.view.PictureAdapter;
 
 
 public class AlbumActivity extends AppCompatActivity {
 
-    private static final int TYPE_SINGLE_CHOOSE = 1;
 
     private static final int SPAN_COUNT = 3;
-    private static final String CAMERA_FILE_NAME = "camera_pic.jpg";
-    private static final String CROP_FILE_NAME = "crop_pic.jpg";
 
-    private RecyclerView albumGridRecyclerView;
-    private RecyclerView albumListRecyclerView;
+
+    private RecyclerView pictureRecyclerView;
+    private RecyclerView albumRecyclerView;
     private Button albumListButton;
 
-    private String authority;
-    private boolean enableCamera = false;
-    private boolean enableCrop = false;
-    private int maxChoice = 1;
 
-    private String currentAlbumId = AlbumMediaScanner.ALBUM_ID_ALL_PHOTOS;
-
-    private File cameraOutputFile = null;
-    private Uri cropOutPutUri = null;
-    private ArrayList<String> selectedPhotos = new ArrayList<>();
-    private AlbumGridAdapter albumGridAdapter;
-    private AlbumListAdapter albumListAdapter;
-
+    private AlbumAdapter albumAdapter;
+    private PictureAdapter pictureAdapter;
 
     private AlbumPresenter presenter;
 
@@ -64,40 +47,46 @@ public class AlbumActivity extends AppCompatActivity {
     protected void initViews() {
         setContentView(R.layout.activity_album);
         initToolbar();
-        Intent intent = getIntent();
-        authority = intent.getStringExtra("authority");
-        enableCamera = intent.getBooleanExtra("enableCamera", false);
-        enableCrop = intent.getBooleanExtra("enableCrop", false);
-        maxChoice = intent.getIntExtra("maxLimit", TYPE_SINGLE_CHOOSE);
-        albumGridRecyclerView = (RecyclerView) findViewById(R.id.albumGridRecyclerView);
-        albumListRecyclerView = (RecyclerView) findViewById(R.id.albumListRecyclerView);
+        pictureRecyclerView = (RecyclerView) findViewById(R.id.pictureRecyclerView);
+        albumRecyclerView = (RecyclerView) findViewById(R.id.albumRecyclerView);
         albumListButton = (Button) findViewById(R.id.albumListButton);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        albumListRecyclerView.setLayoutManager(linearLayoutManager);
-        albumGridRecyclerView.setLayoutManager(new GridLayoutManager(this, SPAN_COUNT));
+        albumRecyclerView.setLayoutManager(linearLayoutManager);
+        pictureRecyclerView.setLayoutManager(new GridLayoutManager(this, SPAN_COUNT));
         int spacing = getResources().getDimensionPixelSize(R.dimen.media_grid_spacing);
-        albumGridRecyclerView.addItemDecoration(new GridItemDecoration(SPAN_COUNT, spacing, false));
-
+        pictureRecyclerView.addItemDecoration(new GridItemDecoration(SPAN_COUNT, spacing, false));
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle(intent.getStringExtra("title"));
+            getSupportActionBar().setTitle(AlbumData.getInstance().getTitle());
         }
+
+        albumAdapter = new AlbumAdapter(this, onAlbumClickListener);
+        albumRecyclerView.setAdapter(albumAdapter);
+
+        pictureAdapter = new PictureAdapter(this, onPictureClickListener);
+        pictureRecyclerView.setAdapter(pictureAdapter);
     }
 
 
     protected void bind() {
         presenter = new AlbumPresenter(this);
-        albumGridAdapter = new AlbumGridAdapter(AlbumActivity.this, presenter.getPhotos(), maxChoice);
-        albumListAdapter = new AlbumListAdapter(AlbumActivity.this, presenter.getAlbums(), listClickListener);
-        albumGridRecyclerView.setAdapter(albumGridAdapter);
-        albumListRecyclerView.setAdapter(albumListAdapter);
-        presenter.loadAlbumPhotos(AlbumMediaScanner.ALBUM_ID_ALL_PHOTOS, enableCamera);
-        presenter.loadAlbumList();
+        presenter.loadAlbums();
+        presenter.loadPictures();
     }
 
     protected void setListeners() {
-        albumListButton.setOnClickListener(listener);
-        albumGridAdapter.setOnItemClickListener(gridClickListener);
+        albumListButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (AlbumData.getInstance().getAlbums().size() > 0) {
+                    if (albumRecyclerView.getVisibility() == View.VISIBLE) {
+                        albumRecyclerView.setVisibility(View.GONE);
+                    } else {
+                        albumRecyclerView.setVisibility(View.VISIBLE);
+                    }
+                }
+            }
+        });
     }
 
 
@@ -123,7 +112,7 @@ public class AlbumActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        if (maxChoice > 1) {
+        if (!AlbumData.getInstance().isSingleChoice()) {
             getMenuInflater().inflate(R.menu.menu_album_confirm, menu);
         }
         return super.onCreateOptionsMenu(menu);
@@ -132,169 +121,37 @@ public class AlbumActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_confirm) {
-            if (selectedPhotos.size() > 0) {
-                Intent intent = new Intent();
-                intent.putStringArrayListExtra("selectedPhotos", selectedPhotos);
-                setResult(Album.RESULT_OK, intent);
-            }
-            finish();
+            presenter.complete();
         }
         return super.onOptionsItemSelected(item);
     }
 
 
-    private View.OnClickListener listener = new View.OnClickListener() {
+    public void loadPictures() {
+        pictureAdapter.notifyDataSetChanged();
+    }
+
+    public void loadAlbums() {
+        albumAdapter.notifyDataSetChanged();
+    }
+
+
+    private AlbumAdapter.OnItemClickListener onAlbumClickListener = new AlbumAdapter.OnItemClickListener() {
         @Override
-        public void onClick(View v) {
-            if (v.getId() == R.id.albumListButton) {
-                if (presenter.getAlbums().size() > 0) {
-                    if (albumListRecyclerView.getVisibility() == View.VISIBLE) {
-                        albumListRecyclerView.setVisibility(View.GONE);
-                    } else {
-                        albumListRecyclerView.setVisibility(View.VISIBLE);
-                    }
-                }
-            }
+        public void onItemClick(AlbumModel album) {
+            albumRecyclerView.setVisibility(View.GONE);
+            Log.e("getAlbumId",album.getAlbumId()+"");
+            AlbumData.getInstance().setCurrentAlbumId(album.getAlbumId());
+            presenter.loadPictures();
         }
     };
 
 
-    public void refreshPhotos(DiffUtil.DiffResult photoDiffResult, ArrayList<Uri> data) {
-        photoDiffResult.dispatchUpdatesTo(albumGridAdapter);
-        presenter.getPhotos().clear();
-        presenter.getPhotos().addAll(data);
-    }
-
-    public void refreshAlbumList(DiffUtil.DiffResult albumDiffResult, ArrayList<AlbumModel> data) {
-        albumDiffResult.dispatchUpdatesTo(albumListAdapter);
-        presenter.getAlbums().clear();
-        presenter.getAlbums().addAll(data);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == Activity.RESULT_OK) {
-            if (requestCode == Album.REQUEST_CODE_CAMERA) {
-                //多选进入(不支持裁剪)，点击拍照，拍照结束直接返回
-                if (maxChoice > 1) {
-                    if (selectedPhotos.size() < maxChoice) {
-                        selectedPhotos.add(cameraOutputFile.getPath());
-                        Intent intent = new Intent();
-                        intent.putStringArrayListExtra("selectedPhotos", selectedPhotos);
-                        setResult(Album.RESULT_OK, intent);
-                        finish();
-                    } else {
-                        Toast.makeText(AlbumActivity.this, "您已选择" + maxChoice + "张照片了！", Toast.LENGTH_SHORT).show();
-                    }
-                } else {
-                    presenter.scanFile(cameraOutputFile);
-                    if (enableCrop) {
-                        String appendPath = System.currentTimeMillis() + "_" + CROP_FILE_NAME;
-                        cropOutPutUri = Uri
-                                .fromFile(FileUtil.getSystemPicturePath())
-                                .buildUpon()
-                                .appendPath(appendPath)
-                                .build();
-                        Album.with(AlbumActivity.this, authority).activityOpenCrop(cameraOutputFile, cropOutPutUri);
-                    }
-                }
-            }
-            if (requestCode == Album.REQUEST_CODE_CROP) {
-                if (maxChoice == TYPE_SINGLE_CHOOSE) {
-                    selectedPhotos.clear();
-                    selectedPhotos.add(cropOutPutUri.getPath());
-                    Intent intent = new Intent();
-                    intent.putStringArrayListExtra("selectedPhotos", selectedPhotos);
-                    setResult(Album.RESULT_OK, intent);
-                    finish();
-                } else {
-                    if (selectedPhotos.size() < maxChoice) {
-                        selectedPhotos.add(cropOutPutUri.getPath());
-                    } else {
-                        Toast.makeText(AlbumActivity.this, "您已选择" + maxChoice + "张照片了！", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            }
-        }
-    }
-
-
-//    private void scanFile(File scanFile) {
-//        AlbumMediaScanner.scanFile(AlbumActivity.this, scanFile, new AlbumCallback<String>() {
-//            @Override
-//            public void onCompleted(String object) {
-//                presenter.loadAlbumPhotos(AlbumMediaScanner.ALBUM_ID_ALL_PHOTOS, enableCamera);
-//            }
-//
-//            @Override
-//            public void onFailed(String str) {
-//
-//            }
-//        });
-//    }
-
-
-    private AlbumGridAdapter.OnItemClickListener gridClickListener = new AlbumGridAdapter.OnItemClickListener() {
-
+    private PictureAdapter.OnItemClickListener onPictureClickListener = new PictureAdapter.OnItemClickListener() {
         @Override
-        public void onCameraClick() {
-            if (PermissionUtil.checkPermission(AlbumActivity.this, Manifest.permission.CAMERA)) {
-                String appendPath = System.currentTimeMillis() + "_" + CAMERA_FILE_NAME;
-                cameraOutputFile = new File(FileUtil.getSystemPicturePath(), appendPath);
-                Album.with(AlbumActivity.this, authority).activityOpenCamera(cameraOutputFile);
-            } else {
-                PermissionUtil.requestPermission(AlbumActivity.this, Manifest.permission.CAMERA);
-                Toast.makeText(AlbumActivity.this, R.string.no_camera_permission, Toast.LENGTH_SHORT).show();
-            }
-        }
-
-        @Override
-        public void onItemClick(Uri uri) {
-            if (maxChoice == TYPE_SINGLE_CHOOSE) {
-                if (enableCrop) {
-                    String appendPath = System.currentTimeMillis() + "_" + CROP_FILE_NAME;
-                    cropOutPutUri = Uri
-                            .fromFile(FileUtil.getSystemPicturePath())
-                            .buildUpon()
-                            .appendPath(appendPath)
-                            .build();
-                    Album.with(AlbumActivity.this, authority).activityOpenCrop(uri, cropOutPutUri);
-                } else {
-                    selectedPhotos.clear();
-                    selectedPhotos.add(uri.getPath());
-                    Intent intent = new Intent();
-                    intent.putStringArrayListExtra("selectedPhotos", selectedPhotos);
-                    setResult(Album.RESULT_OK, intent);
-                    finish();
-                }
-            } else {
-                if (selectedPhotos.size() < maxChoice) {
-                    selectedPhotos.add(uri.getPath());
-                } else {
-                    Toast.makeText(AlbumActivity.this, "您已选择" + maxChoice + "张照片了！", Toast.LENGTH_SHORT).show();
-                }
-            }
-        }
-
-        @Override
-        public void onItemCancelClick(Uri uri) {
-            if (selectedPhotos.size() > 0 && selectedPhotos.contains(uri.getPath())) {
-                selectedPhotos.remove(uri.getPath());
-            }
-        }
-    };
-
-
-    private AlbumListAdapter.OnItemClickListener listClickListener = new AlbumListAdapter.OnItemClickListener() {
-        @Override
-        public void onItemClick(String albumId, String albumName, int position) {
-            if (!albumId.equals(currentAlbumId)) {
-                currentAlbumId = albumId;
-                albumListButton.setText(albumName);
-                presenter.loadAlbumPhotos(currentAlbumId, enableCamera);
-            }
-            albumListRecyclerView.setVisibility(View.GONE);
+        public void onItemClick(PictureModel data) {
+            presenter.onPictureClick(data);
+            pictureAdapter.notifyDataSetChanged();
         }
     };
 
@@ -307,10 +164,10 @@ public class AlbumActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (albumListRecyclerView.getVisibility() == View.VISIBLE) {
-            albumListRecyclerView.setVisibility(View.GONE);
+        if (albumRecyclerView.getVisibility() == View.VISIBLE) {
+            albumRecyclerView.setVisibility(View.GONE);
         } else {
-            setResult(Album.RESULT_CANCEL);
+            setResult(Code.RESULT_CANCEL);
             super.onBackPressed();
         }
     }

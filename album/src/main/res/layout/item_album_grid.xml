@@ -26,6 +26,13 @@
         android:layout_gravity="end"
         android:visibility="gone"/>
 
+    <View
+        android:id="@+id/disableCoverView"
+        support-app:layout_aspectRatio="100%"
+        support-app:layout_widthPercent="100%"
+        android:background="#99c4c3c3"
+        android:visibility="invisible"/>
+
 
 
     <Button
