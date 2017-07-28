@@ -10,9 +10,9 @@ import android.widget.Toast;
 
 import java.io.File;
 
-import cn.jack.album.CropFragment;
-import cn.jack.album.PictureModel;
 import cn.jack.album.R;
+import cn.jack.album.model.PictureModel;
+import cn.jack.album.view.CropFragment;
 
 /**
  * Created by Jack on 2017/7/28.

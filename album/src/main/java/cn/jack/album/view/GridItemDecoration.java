@@ -1,4 +1,4 @@
-package cn.jack.album;
+package cn.jack.album.view;
 
 import android.graphics.Rect;
 import android.support.v7.widget.RecyclerView;

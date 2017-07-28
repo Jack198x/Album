@@ -14,17 +14,17 @@ import android.widget.Toast;
 import java.io.File;
 import java.util.ArrayList;
 
-import cn.jack.album.AlbumActivity;
-import cn.jack.album.AlbumModel;
-import cn.jack.album.AlbumUtil;
-import cn.jack.album.MediaScannerUtil;
-import cn.jack.album.PictureModel;
-import cn.jack.album.PictureType;
 import cn.jack.album.data.AlbumData;
+import cn.jack.album.model.AlbumModel;
+import cn.jack.album.model.PictureModel;
+import cn.jack.album.model.PictureType;
+import cn.jack.album.util.AlbumUtil;
 import cn.jack.album.util.CameraUtil;
 import cn.jack.album.util.Code;
 import cn.jack.album.util.CropUtil;
 import cn.jack.album.util.FileUtil;
+import cn.jack.album.util.MediaScannerUtil;
+import cn.jack.album.view.AlbumActivity;
 
 /**
  * Created by Jack on 2017/4/6.

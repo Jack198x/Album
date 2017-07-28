@@ -4,16 +4,15 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.content.Intent;
-import android.net.Uri;
 import android.text.TextUtils;
 import android.widget.Toast;
 
-import java.io.File;
-
 import cn.jack.album.data.AlbumData;
 import cn.jack.album.util.Code;
-import cn.jack.album.util.IntentUtil;
 import cn.jack.album.util.PermissionUtil;
+import cn.jack.album.view.AlbumActivity;
+import cn.jack.album.view.AlbumFragment;
+import cn.jack.album.view.PictureSelectListener;
 
 /**
  * Created by Jack on 2016/12/23.

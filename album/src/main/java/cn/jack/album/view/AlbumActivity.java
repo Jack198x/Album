@@ -1,4 +1,4 @@
-package cn.jack.album;
+package cn.jack.album.view;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -13,11 +13,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
+import cn.jack.album.R;
 import cn.jack.album.data.AlbumData;
+import cn.jack.album.model.AlbumModel;
+import cn.jack.album.model.PictureModel;
 import cn.jack.album.presenter.AlbumPresenter;
 import cn.jack.album.util.Code;
-import cn.jack.album.view.AlbumAdapter;
-import cn.jack.album.view.PictureAdapter;
 
 
 public class AlbumActivity extends AppCompatActivity {
@@ -140,7 +141,7 @@ public class AlbumActivity extends AppCompatActivity {
         @Override
         public void onItemClick(AlbumModel album) {
             albumRecyclerView.setVisibility(View.GONE);
-            Log.e("getAlbumId",album.getAlbumId()+"");
+            Log.e("getAlbumId", album.getAlbumId() + "");
             AlbumData.getInstance().setCurrentAlbumId(album.getAlbumId());
             presenter.loadPictures();
         }

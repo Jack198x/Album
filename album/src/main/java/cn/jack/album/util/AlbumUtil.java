@@ -1,4 +1,4 @@
-package cn.jack.album;
+package cn.jack.album.util;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -7,6 +7,9 @@ import android.provider.MediaStore;
 
 import java.io.File;
 import java.util.ArrayList;
+
+import cn.jack.album.model.AlbumModel;
+import cn.jack.album.model.PictureModel;
 
 
 /**

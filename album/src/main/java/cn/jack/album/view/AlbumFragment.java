@@ -1,4 +1,4 @@
-package cn.jack.album;
+package cn.jack.album.view;
 
 import android.app.Fragment;
 import android.content.Intent;

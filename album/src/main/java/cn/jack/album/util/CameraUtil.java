@@ -8,9 +8,9 @@ import android.widget.Toast;
 
 import java.io.File;
 
-import cn.jack.album.CameraFragment;
-import cn.jack.album.PictureModel;
 import cn.jack.album.R;
+import cn.jack.album.model.PictureModel;
+import cn.jack.album.view.CameraFragment;
 
 /**
  * Created by Jack on 2017/7/28.

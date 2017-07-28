@@ -7,7 +7,7 @@ import android.widget.ImageView;
 
 import java.io.File;
 
-import cn.jack.album.PictureModel;
+import cn.jack.album.model.PictureModel;
 import cn.jack.album.util.CameraUtil;
 import cn.jack.album.util.FileUtil;
 

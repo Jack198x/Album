@@ -1,4 +1,4 @@
-package cn.jack.album;
+package cn.jack.album.model;
 
 import android.net.Uri;
 

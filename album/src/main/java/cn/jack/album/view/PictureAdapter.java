@@ -6,14 +6,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.Toast;
 
-import cn.jack.album.BaseViewHolder;
-import cn.jack.album.CheckView;
-import cn.jack.album.PictureModel;
-import cn.jack.album.PictureType;
 import cn.jack.album.R;
 import cn.jack.album.data.AlbumData;
+import cn.jack.album.model.PictureModel;
+import cn.jack.album.model.PictureType;
 import cn.jack.glideimageview.GlideImageView;
 
 /**

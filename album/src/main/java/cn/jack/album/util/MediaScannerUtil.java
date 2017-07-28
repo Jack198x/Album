@@ -1,4 +1,4 @@
-package cn.jack.album;
+package cn.jack.album.util;
 
 import android.content.Context;
 import android.media.MediaScannerConnection;
@@ -32,7 +32,6 @@ public class MediaScannerUtil {
     private static void scanFile(Context context, String[] paths, MediaScannerConnection.OnScanCompletedListener callback) {
         MediaScannerConnection.scanFile(context, paths, null, callback);
     }
-
 
 
 }

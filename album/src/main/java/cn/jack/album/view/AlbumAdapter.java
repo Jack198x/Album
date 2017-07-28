@@ -8,10 +8,9 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import cn.jack.album.AlbumModel;
-import cn.jack.album.BaseViewHolder;
 import cn.jack.album.R;
 import cn.jack.album.data.AlbumData;
+import cn.jack.album.model.AlbumModel;
 import cn.jack.glideimageview.GlideImageView;
 
 /**

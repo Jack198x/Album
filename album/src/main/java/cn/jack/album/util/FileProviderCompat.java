@@ -14,7 +14,7 @@ import java.io.File;
 
 public class FileProviderCompat {
 
-    public static Uri getUriForFile(Context context, String authority,File file) {
+    public static Uri getUriForFile(Context context, String authority, File file) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             return FileProvider.getUriForFile(context, authority, file);
         } else {

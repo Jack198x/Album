@@ -2,9 +2,9 @@ package cn.jack.album.data;
 
 import java.util.ArrayList;
 
-import cn.jack.album.AlbumModel;
-import cn.jack.album.AlbumUtil;
-import cn.jack.album.PictureModel;
+import cn.jack.album.model.AlbumModel;
+import cn.jack.album.model.PictureModel;
+import cn.jack.album.util.AlbumUtil;
 
 /**
  * Created by Jack on 2017/7/24.

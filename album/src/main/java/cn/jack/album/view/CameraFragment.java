@@ -1,4 +1,4 @@
-package cn.jack.album;
+package cn.jack.album.view;
 
 import android.app.Activity;
 import android.app.Fragment;
@@ -9,6 +9,7 @@ import android.os.Looper;
 
 import java.io.File;
 
+import cn.jack.album.model.PictureModel;
 import cn.jack.album.util.CameraUtil;
 import cn.jack.album.util.Code;
 

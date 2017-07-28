@@ -1,4 +1,4 @@
-package cn.jack.album;
+package cn.jack.album.view;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -15,6 +15,8 @@ import android.support.v4.content.res.ResourcesCompat;
 import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.view.View;
+
+import cn.jack.album.R;
 
 /**
  * Created by Jack on 2017/7/24.

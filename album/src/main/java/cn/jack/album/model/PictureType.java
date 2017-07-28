@@ -1,4 +1,4 @@
-package cn.jack.album;
+package cn.jack.album.model;
 
 /**
  * Created by Jack on 2017/7/27.
