@@ -12,6 +12,7 @@ import java.io.File;
 import cn.jack.album.model.PictureModel;
 import cn.jack.album.util.Code;
 import cn.jack.album.util.CropUtil;
+import cn.jack.album.util.MimeType;
 
 /**
  * Created by Jack on 2017/7/28.
@@ -37,12 +38,10 @@ public class CropFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == Code.REQUEST_CROP && resultCode == Activity.RESULT_OK) {
-            final PictureModel cropPicture = new PictureModel();
-            cropPicture.setUri(Uri.fromFile(cropOutputFile));
             new Handler(Looper.getMainLooper()).post(new Runnable() {
                 @Override
                 public void run() {
-                    cropListener.onCrop(cropPicture);
+                    cropListener.onCrop(new PictureModel(cropOutputFile.getPath(), MimeType.JPEG.toString()));
                 }
             });
         }

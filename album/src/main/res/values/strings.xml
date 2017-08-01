@@ -1,8 +1,9 @@
 <resources>
     <string name="app_name">Album</string>
     <string name="image_desc">image</string>
-    <string name="all_photos">All Photos</string>
-    <string name="no_storage_permission">read external storage permission denied</string>
-    <string name="no_camera_permission">camera permission denied</string>
-    <string name="confirm">Confirm</string>
+    <string name="all_photos">全部照片</string>
+    <string name="preview">预览</string>
+    <string name="no_storage_permission">无相册访问权限</string>
+    <string name="no_camera_permission">无相机访问权限</string>
+    <string name="confirm">确定</string>
 </resources>

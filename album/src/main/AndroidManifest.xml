@@ -7,7 +7,7 @@
 
     <application>
         <activity
-            android:name=".AlbumActivity"
+            android:name=".view.AlbumActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AlbumTheme"
             android:windowSoftInputMode="stateHidden|adjustUnspecified" />

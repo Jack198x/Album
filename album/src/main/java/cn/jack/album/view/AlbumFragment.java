@@ -3,7 +3,7 @@ package cn.jack.album.view;
 import android.app.Fragment;
 import android.content.Intent;
 
-import cn.jack.album.data.AlbumData;
+import cn.jack.album.data.SelectedPictureData;
 import cn.jack.album.util.Code;
 
 /**
@@ -34,7 +34,7 @@ public class AlbumFragment extends Fragment {
             return;
         }
         if (requestCode == Code.REQUEST_ALBUM && resultCode == Code.RESULT_OK) {
-            selectListener.onPictureSelect(AlbumData.getInstance().getSelectedPictures());
+            selectListener.onPictureSelect(SelectedPictureData.getInstance().getData());
         }
     }
 

@@ -22,6 +22,17 @@
         <item name="android:textSize">14sp</item>
         <!-- toolbar text style. -->
         <item name="android:textStyle">normal</item>
+
+        <item name="android:actionMenuTextAppearance">@style/TextAppearance</item>
+
+        <item name="android:actionMenuTextColor">#FF5555</item>
+    </style>
+
+
+    <style name="TextAppearance">
+        <item name="android:textStyle">normal</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/toolbar_title_color</item>
     </style>
 
 </resources>

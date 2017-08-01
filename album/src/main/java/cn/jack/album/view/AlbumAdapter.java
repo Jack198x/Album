@@ -38,12 +38,12 @@ public class AlbumAdapter extends RecyclerView.Adapter<BaseViewHolder<AlbumModel
 
     @Override
     public void onBindViewHolder(BaseViewHolder<AlbumModel> holder, int position) {
-        holder.parse(activity, AlbumData.getInstance().getAlbums().get(position));
+        holder.parse(activity, AlbumData.getInstance().getItem(position));
     }
 
     @Override
     public int getItemCount() {
-        return AlbumData.getInstance().getAlbums().size();
+        return AlbumData.getInstance().getSize();
     }
 
 
@@ -82,7 +82,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<BaseViewHolder<AlbumModel
         }
     }
 
-    public interface OnItemClickListener {
+    interface OnItemClickListener {
         void onItemClick(AlbumModel album);
     }
 }

@@ -12,13 +12,12 @@ import android.support.annotation.RequiresApi;
 import android.widget.Toast;
 
 import java.io.File;
-import java.util.ArrayList;
 
+import cn.jack.album.config.Config;
 import cn.jack.album.data.AlbumData;
-import cn.jack.album.model.AlbumModel;
+import cn.jack.album.data.SelectedPictureData;
 import cn.jack.album.model.PictureModel;
-import cn.jack.album.model.PictureType;
-import cn.jack.album.util.AlbumUtil;
+import cn.jack.album.util.AlbumLoader;
 import cn.jack.album.util.CameraUtil;
 import cn.jack.album.util.Code;
 import cn.jack.album.util.CropUtil;
@@ -44,16 +43,12 @@ public class AlbumPresenter {
     }
 
 
-    public void loadPictures() {
+    public void load() {
         new LoadPicturesTask().execute(AlbumData.getInstance().getCurrentAlbumId());
     }
 
-    public void loadAlbums() {
-        new LoadAlbumsTask().execute();
-    }
 
-
-    private class LoadPicturesTask extends AsyncTask<String, Void, ArrayList<PictureModel>> {
+    private class LoadPicturesTask extends AsyncTask<String, Void, String> {
 
         @Override
         protected void onPreExecute() {
@@ -61,141 +56,114 @@ public class AlbumPresenter {
         }
 
         @Override
-        protected ArrayList<PictureModel> doInBackground(String... albumId) {
-            ArrayList<PictureModel> result = AlbumUtil.getPictures(view, albumId[0]);
-            if (albumId[0].equals(AlbumUtil.ALBUM_ID_ALL_PHOTOS) && AlbumData.getInstance().isEnableCamera()) {
-                PictureModel camera = new PictureModel();
-                camera.setType(0);
-                result.add(0, camera);
-            }
-            return result;
+        protected String doInBackground(String... albumId) {
+            new AlbumLoader(view).load(albumId[0]);
+            return albumId[0];
         }
 
-
         @Override
-        protected void onPostExecute(ArrayList<PictureModel> result) {
-            AlbumData.getInstance().setPictures(result);
+        protected void onPostExecute(String albumId) {
+            super.onPostExecute(albumId);
             progressDialog.dismiss();
-            view.loadPictures();
+            view.refreshAlbum();
         }
     }
 
-    private class LoadAlbumsTask extends AsyncTask<String, Void, ArrayList<AlbumModel>> {
-
-        @Override
-        protected void onPreExecute() {
-            progressDialog.show();
-        }
-
-        @Override
-        protected ArrayList<AlbumModel> doInBackground(String... albumId) {
-            return AlbumUtil.getAlbums(view);
-        }
-
-
-        @Override
-        protected void onPostExecute(ArrayList<AlbumModel> result) {
-            AlbumData.getInstance().setAlbums(result);
-            progressDialog.dismiss();
-            view.loadAlbums();
-        }
-    }
-
-    public void onPictureClick(PictureModel picture) {
-        if (picture.getType() == PictureType.CAMERA) {
-            if (AlbumData.getInstance().canSelectMore()) {
-                camera();
-            } else {
-                Toast.makeText(view, "您已经选择了" + AlbumData.getInstance().getMaxChoice() + "张照片了！", Toast.LENGTH_SHORT).show();
-            }
+    public void onCameraClick(){
+        if (SelectedPictureData.getInstance().canAddMore()) {
+            camera();
         } else {
-            if (AlbumData.getInstance().isSingleChoice()) {
-                if (AlbumData.getInstance().isEnableCrop()) {
+            Toast.makeText(view, "您已经选择了" + Config.getInstance().getMaxChoice() + "张照片了！", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+        public void onPictureClick(PictureModel picture) {
+            if (Config.getInstance().isSingleChoice()) {
+                if (Config.getInstance().isEnableCrop()) {
                     crop(picture.getFile());
                 } else {
-                    AlbumData.getInstance().clearSelectedPictures();
-                    AlbumData.getInstance().select(picture);
+                    SelectedPictureData.getInstance().clear();
+                    SelectedPictureData.getInstance().add(picture);
                 }
             } else {
-                if (AlbumData.getInstance().isSelected(picture)) {
-                    AlbumData.getInstance().deselect(picture);
+                if (SelectedPictureData.getInstance().isAdded(picture)) {
+                    SelectedPictureData.getInstance().remove(picture);
                 } else {
-                    if (AlbumData.getInstance().canSelectMore()) {
-                        AlbumData.getInstance().select(picture);
+                    if (SelectedPictureData.getInstance().canAddMore()) {
+                        SelectedPictureData.getInstance().add(picture);
                     } else {
-                        Toast.makeText(view, "您已经选择了" + AlbumData.getInstance().getMaxChoice() + "张照片了！", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(view, "您已经选择了" + Config.getInstance().getMaxChoice() + "张照片了！", Toast.LENGTH_SHORT).show();
                     }
                 }
             }
         }
-    }
 
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
-    private void camera() {
-        String appendPath = System.currentTimeMillis() + "_camera_pic.jpg";
-        final File cameraOutputFile = new File(FileUtil.getSystemPicturePath(), appendPath);
-        CameraUtil.camera(view, AlbumData.getInstance().getAuthority(), cameraOutputFile, new CameraUtil.CameraListener() {
-            @Override
-            public void onCamera(PictureModel cameraPicture) {
-                scanFile(cameraPicture.getUri());
-                if (AlbumData.getInstance().isSingleChoice()) {
-                    if (AlbumData.getInstance().isEnableCrop()) {
-                        crop(cameraOutputFile);
-                    } else {
-                        AlbumData.getInstance().clearSelectedPictures();
-                        AlbumData.getInstance().select(cameraPicture);
-                        complete();
-                    }
-                }
-            }
-        });
-    }
-
-
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
-    private void crop(File cropInputFile) {
-        String appendPath = System.currentTimeMillis() + "_crop_pic.jpg";
-        final File cropOutPutFile = new File(FileUtil.getSystemPicturePath(), appendPath);
-        CropUtil.crop(view, AlbumData.getInstance().getAuthority(), cropInputFile, cropOutPutFile, new CropUtil.CropListener() {
-            @Override
-            public void onCrop(PictureModel cropPicture) {
-                AlbumData.getInstance().clearSelectedPictures();
-                AlbumData.getInstance().select(cropPicture);
-                complete();
-            }
-        });
-    }
-
-
-    private void scanFile(Uri uri) {
-        if (view == null) {
-            return;
-        }
-        MediaScannerUtil.scanFile(view, uri, new MediaScannerConnection.OnScanCompletedListener() {
-            @Override
-            public void onScanCompleted(String path, Uri uri) {
-                if (view != null) {
-                    new Handler(Looper.getMainLooper()).post(new Runnable() {
-                        @Override
-                        public void run() {
-                            loadPictures();
+        @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+        private void camera() {
+            String appendPath = System.currentTimeMillis() + "_camera_pic.jpg";
+            final File cameraOutputFile = new File(FileUtil.getSystemPicturePath(), appendPath);
+            CameraUtil.camera(view, Config.getInstance().getAuthority(), cameraOutputFile, new CameraUtil.CameraListener() {
+                @Override
+                public void onCamera(PictureModel cameraPicture) {
+                    scanFile(cameraPicture.getUri());
+                    if (Config.getInstance().isSingleChoice()) {
+                        if (Config.getInstance().isEnableCrop()) {
+                            crop(cameraOutputFile);
+                        } else {
+                            SelectedPictureData.getInstance().clear();
+                            SelectedPictureData.getInstance().add(cameraPicture);
+                            complete();
                         }
-                    });
+                    }
                 }
-            }
-        });
-    }
-
-
-    public void complete() {
-        if (AlbumData.getInstance().getSelectedPictures().size() > 0) {
-            Intent intent = new Intent();
-            view.setResult(Code.RESULT_OK, intent);
+            });
         }
-        view.finish();
-    }
 
-    public void destroy() {
-        view = null;
-    }
+
+        @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+        private void crop(File cropInputFile) {
+            String appendPath = System.currentTimeMillis() + "_crop_pic.jpg";
+            final File cropOutPutFile = new File(FileUtil.getSystemPicturePath(), appendPath);
+            CropUtil.crop(view, Config.getInstance().getAuthority(), cropInputFile, cropOutPutFile, new CropUtil.CropListener() {
+                @Override
+                public void onCrop(PictureModel cropPicture) {
+                    SelectedPictureData.getInstance().clear();
+                    SelectedPictureData.getInstance().add(cropPicture);
+                    complete();
+                }
+            });
+        }
+
+
+        private void scanFile(Uri uri) {
+            if (view == null) {
+                return;
+            }
+            MediaScannerUtil.scanFile(view, uri, new MediaScannerConnection.OnScanCompletedListener() {
+                @Override
+                public void onScanCompleted(String path, Uri uri) {
+                    if (view != null) {
+                        new Handler(Looper.getMainLooper()).post(new Runnable() {
+                            @Override
+                            public void run() {
+                                load();
+                            }
+                        });
+                    }
+                }
+            });
+        }
+
+
+        public void complete() {
+            if (SelectedPictureData.getInstance().getSize() > 0) {
+                Intent intent = new Intent();
+                view.setResult(Code.RESULT_OK, intent);
+            }
+            view.finish();
+        }
+
+        public void destroy() {
+            view = null;
+        }
 }

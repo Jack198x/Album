@@ -6,11 +6,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 
 import cn.jack.album.R;
+import cn.jack.album.config.Config;
 import cn.jack.album.data.AlbumData;
+import cn.jack.album.data.PictureData;
+import cn.jack.album.data.SelectedPictureData;
 import cn.jack.album.model.PictureModel;
-import cn.jack.album.model.PictureType;
+import cn.jack.album.util.AlbumLoader;
 import cn.jack.glideimageview.GlideImageView;
 
 /**
@@ -18,6 +22,9 @@ import cn.jack.glideimageview.GlideImageView;
  */
 
 public class PictureAdapter extends RecyclerView.Adapter<BaseViewHolder<PictureModel>> {
+
+    private static final int TYPE_CAMERA = 0x0001;
+    private static final int TYPE_PICTURE = 0x0002;
 
 
     private Activity activity;
@@ -34,12 +41,16 @@ public class PictureAdapter extends RecyclerView.Adapter<BaseViewHolder<PictureM
 
     @Override
     public int getItemViewType(int position) {
-        return AlbumData.getInstance().getPictures().get(position).getType().getCode();
+        if (isCamera(position)) {
+            return TYPE_CAMERA;
+        } else {
+            return TYPE_PICTURE;
+        }
     }
 
     @Override
     public BaseViewHolder<PictureModel> onCreateViewHolder(ViewGroup parent, int viewType) {
-        if (PictureType.fromInt(viewType) == PictureType.CAMERA) {
+        if (viewType == TYPE_CAMERA) {
             return new CameraHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_album_grid_camera, parent, false));
         } else {
             return new PictureHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_album_grid, parent, false));
@@ -48,17 +59,31 @@ public class PictureAdapter extends RecyclerView.Adapter<BaseViewHolder<PictureM
 
     @Override
     public void onBindViewHolder(BaseViewHolder<PictureModel> holder, int position) {
-        holder.parse(activity, AlbumData.getInstance().getPictures().get(position));
+        if (enableCamera()) {
+            if (position == 0) {
+                holder.parse(activity, null);
+            } else {
+                holder.parse(activity, PictureData.getInstance().getItem(position - 1));
+            }
+        } else {
+            holder.parse(activity, PictureData.getInstance().getItem(position));
+        }
+
     }
 
     @Override
     public int getItemCount() {
-        return AlbumData.getInstance().getPictures().size();
+        if (Config.getInstance().isEnableCamera()) {
+            return PictureData.getInstance().getSize() + 1;
+        } else {
+            return PictureData.getInstance().getSize();
+        }
     }
 
 
     private class PictureHolder extends BaseViewHolder<PictureModel> {
         GlideImageView albumGridItemImageView;
+        ImageView gifTagImageView;
         CheckView albumGridItemCheckView;
         View disableCoverView;
         Button albumGridItemButton;
@@ -66,6 +91,7 @@ public class PictureAdapter extends RecyclerView.Adapter<BaseViewHolder<PictureM
         PictureHolder(View view) {
             super(view);
             this.albumGridItemImageView = (GlideImageView) view.findViewById(R.id.albumGridItemImageView);
+            this.gifTagImageView = (ImageView) view.findViewById(R.id.gifTagImageView);
             this.albumGridItemCheckView = (CheckView) view.findViewById(R.id.albumGridItemCheckView);
             this.disableCoverView = view.findViewById(R.id.disableCoverView);
             this.albumGridItemButton = (Button) view.findViewById(R.id.albumGridItemButton);
@@ -75,27 +101,28 @@ public class PictureAdapter extends RecyclerView.Adapter<BaseViewHolder<PictureM
         public void parse(final Activity activity, final PictureModel picture) {
             albumGridItemImageView.centerCrop();
             albumGridItemImageView.setImageUri(picture.getUri());
-            if (AlbumData.getInstance().isSingleChoice()) {
+            gifTagImageView.setVisibility(picture.isGif() ? View.VISIBLE : View.INVISIBLE);
+            if (Config.getInstance().isSingleChoice()) {
                 disableCoverView.setVisibility(View.INVISIBLE);
                 albumGridItemCheckView.setVisibility(View.GONE);
             } else {
                 albumGridItemCheckView.setVisibility(View.VISIBLE);
                 albumGridItemCheckView.setCountable(true);
-                if (AlbumData.getInstance().isSelected(picture)) {
+                if (SelectedPictureData.getInstance().isAdded(picture)) {
                     albumGridItemCheckView.setEnabled(true);
-                    albumGridItemCheckView.setCheckedNum(AlbumData.getInstance().indexOf(picture) + 1);
+                    albumGridItemCheckView.setCheckedNum(SelectedPictureData.getInstance().indexOf(picture) + 1);
                     disableCoverView.setVisibility(View.INVISIBLE);
                 } else {
                     albumGridItemCheckView.setCheckedNum(CheckView.UNCHECKED);
-                    albumGridItemCheckView.setEnabled(AlbumData.getInstance().canSelectMore());
-                    disableCoverView.setVisibility(AlbumData.getInstance().canSelectMore() ? View.INVISIBLE : View.VISIBLE);
+                    albumGridItemCheckView.setEnabled(SelectedPictureData.getInstance().canAddMore());
+                    disableCoverView.setVisibility(SelectedPictureData.getInstance().canAddMore() ? View.INVISIBLE : View.VISIBLE);
                 }
             }
             albumGridItemButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (listener != null) {
-                        listener.onItemClick(picture);
+                        listener.onPictureClick(picture);
                     }
                 }
             });
@@ -117,20 +144,30 @@ public class PictureAdapter extends RecyclerView.Adapter<BaseViewHolder<PictureM
                 @Override
                 public void onClick(View v) {
                     if (listener != null) {
-                        listener.onItemClick(data);
+                        listener.onCameraClick();
                     }
                 }
             });
         }
     }
 
+    private boolean isCamera(int position) {
+        return enableCamera() && position == 0;
+    }
+
+    private boolean enableCamera(){
+        return Config.getInstance().isEnableCamera() && AlbumData.getInstance().getCurrentAlbumId().equals(AlbumLoader.ALBUM_ID_ALL_IMAGES);
+    }
+
     public void setOnItemClickListener(OnItemClickListener listener) {
         this.listener = listener;
     }
 
-    public interface OnItemClickListener {
+    interface OnItemClickListener {
 
-        void onItemClick(PictureModel data);
+        void onCameraClick();
+
+        void onPictureClick(PictureModel data);
 
     }
 

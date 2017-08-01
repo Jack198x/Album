@@ -3,9 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
+    android:background="#efefef"
     android:orientation="vertical"
-    tools:context=".AlbumActivity">
+    tools:context=".view.AlbumActivity">
 
     <include layout="@layout/global_include_toolbar" />
 
@@ -56,6 +56,23 @@
             android:paddingRight="10dp"
             android:text="@string/all_photos"
             android:textColor="#333333"
+            android:textSize="14sp" />
+
+
+        <Button
+            android:id="@+id/previewButton"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="end"
+            android:background="?android:attr/selectableItemBackground"
+            android:gravity="center"
+            android:maxLines="1"
+            android:minWidth="80dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:text="@string/preview"
+            android:textColor="#333333"
+            android:visibility="invisible"
             android:textSize="14sp" />
     </FrameLayout>
 

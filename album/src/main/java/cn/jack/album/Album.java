@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.text.TextUtils;
 import android.widget.Toast;
 
+import cn.jack.album.config.Config;
 import cn.jack.album.data.AlbumData;
 import cn.jack.album.util.Code;
 import cn.jack.album.util.PermissionUtil;
@@ -38,12 +39,12 @@ public class Album {
     }
 
     public static Album with(Activity activity, String authority) {
-        AlbumData.getInstance().init(authority);
+        Config.getInstance().init(authority);
         return new Album(activity);
     }
 
     public Album title(String title) {
-        AlbumData.getInstance().setTitle(TextUtils.isEmpty(title) ? "选择图片" : title);
+        Config.getInstance().setTitle(TextUtils.isEmpty(title) ? "选择图片" : title);
         return this;
     }
 
@@ -53,12 +54,12 @@ public class Album {
     }
 
     public Album enableCamera(boolean enable) {
-        AlbumData.getInstance().setEnableCamera(enable);
+        Config.getInstance().setEnableCamera(enable);
         return this;
     }
 
     public Album enableCrop(boolean enableCrop) {
-        AlbumData.getInstance().setEnableCrop(enableCrop);
+        Config.getInstance().setEnableCrop(enableCrop);
         return this;
     }
 
@@ -68,7 +69,7 @@ public class Album {
      * maxChoice 1为单选，大于1不支持裁剪
      */
     public Album maxChoice(int maxChoice) {
-        AlbumData.getInstance().setMaxChoice(maxChoice);
+        Config.getInstance().setMaxChoice(maxChoice);
         return this;
     }
 

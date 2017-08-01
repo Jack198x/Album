@@ -7,13 +7,13 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
 import cn.jack.album.R;
+import cn.jack.album.config.Config;
 import cn.jack.album.data.AlbumData;
 import cn.jack.album.model.AlbumModel;
 import cn.jack.album.model.PictureModel;
@@ -58,7 +58,7 @@ public class AlbumActivity extends AppCompatActivity {
         int spacing = getResources().getDimensionPixelSize(R.dimen.media_grid_spacing);
         pictureRecyclerView.addItemDecoration(new GridItemDecoration(SPAN_COUNT, spacing, false));
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle(AlbumData.getInstance().getTitle());
+            getSupportActionBar().setTitle(Config.getInstance().getTitle());
         }
 
         albumAdapter = new AlbumAdapter(this, onAlbumClickListener);
@@ -71,15 +71,14 @@ public class AlbumActivity extends AppCompatActivity {
 
     protected void bind() {
         presenter = new AlbumPresenter(this);
-        presenter.loadAlbums();
-        presenter.loadPictures();
+        presenter.load();
     }
 
     protected void setListeners() {
         albumListButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (AlbumData.getInstance().getAlbums().size() > 0) {
+                if (AlbumData.getInstance().getSize() > 0) {
                     if (albumRecyclerView.getVisibility() == View.VISIBLE) {
                         albumRecyclerView.setVisibility(View.GONE);
                     } else {
@@ -113,7 +112,7 @@ public class AlbumActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        if (!AlbumData.getInstance().isSingleChoice()) {
+        if (!Config.getInstance().isSingleChoice()) {
             getMenuInflater().inflate(R.menu.menu_album_confirm, menu);
         }
         return super.onCreateOptionsMenu(menu);
@@ -128,32 +127,36 @@ public class AlbumActivity extends AppCompatActivity {
     }
 
 
-    public void loadPictures() {
+    public void refreshAlbum(){
         pictureAdapter.notifyDataSetChanged();
-    }
-
-    public void loadAlbums() {
         albumAdapter.notifyDataSetChanged();
     }
+
+
 
 
     private AlbumAdapter.OnItemClickListener onAlbumClickListener = new AlbumAdapter.OnItemClickListener() {
         @Override
         public void onItemClick(AlbumModel album) {
             albumRecyclerView.setVisibility(View.GONE);
-            Log.e("getAlbumId", album.getAlbumId() + "");
             AlbumData.getInstance().setCurrentAlbumId(album.getAlbumId());
-            presenter.loadPictures();
+            presenter.load();
         }
     };
 
 
     private PictureAdapter.OnItemClickListener onPictureClickListener = new PictureAdapter.OnItemClickListener() {
         @Override
-        public void onItemClick(PictureModel data) {
+        public void onCameraClick() {
+            presenter.onCameraClick();
+        }
+
+        @Override
+        public void onPictureClick(PictureModel data) {
             presenter.onPictureClick(data);
             pictureAdapter.notifyDataSetChanged();
         }
+
     };
 
 

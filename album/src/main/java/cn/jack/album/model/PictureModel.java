@@ -4,55 +4,42 @@ import android.net.Uri;
 
 import java.io.File;
 
+import cn.jack.album.util.MimeType;
+
 /**
  * Created by Jack on 2017/7/27.
  */
 
 public class PictureModel {
 
-    private String id;
-    private Uri uri;
-    private File file;
-    private int type = 1;
-    private int orientation;
+    private String path;
+    private String mimeType= MimeType.JPEG.toString();
 
-    public String getId() {
-        return id;
+
+    public PictureModel(String path, String mimeType) {
+        this.path = path;
+        this.mimeType = mimeType;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public String getPath() {
+        return path;
     }
 
     public Uri getUri() {
-        return uri;
+        return Uri.parse("file://" + path);
     }
 
-    public void setUri(Uri uri) {
-        this.uri = uri;
-    }
 
     public File getFile() {
-        return file;
+        return new File(path);
     }
 
-    public void setFile(File file) {
-        this.file = file;
+
+    public String getMimeType() {
+        return mimeType;
     }
 
-    public PictureType getType() {
-        return type == 0 ? PictureType.CAMERA : PictureType.PICTURE;
-    }
-
-    public void setType(int type) {
-        this.type = type;
-    }
-
-    public int getOrientation() {
-        return orientation;
-    }
-
-    public void setOrientation(int orientation) {
-        this.orientation = orientation;
+    public boolean isGif() {
+        return mimeType.equals(MimeType.GIF.toString());
     }
 }

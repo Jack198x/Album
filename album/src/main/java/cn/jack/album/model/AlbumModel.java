@@ -9,15 +9,14 @@ public class AlbumModel {
 
     private String albumName = "";
     private String albumId = "";
-    private int photoCount = 0;
+    private int photoCount = 1;
     private Uri coverUri = null;
 
 
-    public AlbumModel(String albumName, String albumId, Uri coverUri, int photoCount) {
+    public AlbumModel(String albumName, String albumId, Uri coverUri) {
         this.albumName = albumName;
         this.albumId = albumId;
         this.coverUri = coverUri;
-        this.photoCount = photoCount;
     }
 
     public String getAlbumName() {
