@@ -50,4 +50,8 @@ public class AlbumModel {
     public void setCoverUri(Uri coverUri) {
         this.coverUri = coverUri;
     }
+
+    public void countPlus(){
+        photoCount++;
+    }
 }

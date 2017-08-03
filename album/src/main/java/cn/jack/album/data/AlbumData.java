@@ -61,7 +61,7 @@ public class AlbumData {
     public void add(AlbumModel album) {
         int index = indexOf(album.getAlbumId());
         if (index >= 0) {
-            albums.get(index).setPhotoCount(albums.get(index).getPhotoCount() + 1);
+            albums.get(index).countPlus();
         } else {
             albums.add(album);
         }

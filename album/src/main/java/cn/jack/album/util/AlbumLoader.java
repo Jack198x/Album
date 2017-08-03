@@ -45,6 +45,9 @@ public class AlbumLoader {
             cursor = getPictureCursor(selectionArgs);
             if (cursor != null) {
                 PictureData.getInstance().clear();
+                if (loadAllImages) {
+                    AlbumData.getInstance().clear();
+                }
                 while (cursor.moveToNext()) {
                     String path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
                     String mimeType = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.MIME_TYPE));
