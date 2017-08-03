@@ -2,6 +2,7 @@ package cn.jack.album.config;
 
 import cn.jack.album.data.AlbumData;
 import cn.jack.album.data.PictureData;
+import cn.jack.album.data.SelectedPictureData;
 import cn.jack.album.util.AlbumLoader;
 
 /**
@@ -48,6 +49,7 @@ public class Config {
         AlbumData.getInstance().clear();
         AlbumData.getInstance().setCurrentAlbumId(AlbumLoader.ALBUM_ID_ALL_IMAGES);
         PictureData.getInstance().clear();
+        SelectedPictureData.getInstance().clear();
     }
 
     public String getTitle() {

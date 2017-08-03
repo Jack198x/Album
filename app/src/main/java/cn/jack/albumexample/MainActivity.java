@@ -36,9 +36,9 @@ public class MainActivity extends AppCompatActivity {
 //                });
                 Album.with(MainActivity.this, getString(R.string.album))
                         .title("Album")
-                        .enableCrop(true)
+                        .enableCrop(false)
                         .enableCamera(true)
-                        .maxChoice(2)
+                        .maxChoice(1)
                         .setListener(new PictureSelectListener() {
                             @Override
                             public void onPictureSelect(ArrayList<PictureModel> pictures) {
