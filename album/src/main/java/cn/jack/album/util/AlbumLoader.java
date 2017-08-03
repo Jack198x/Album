@@ -51,7 +51,14 @@ public class AlbumLoader {
                     String id = cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.BUCKET_ID));
                     String albumName = cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME));
                     PictureData.getInstance().add(new PictureModel(path, mimeType));
-                    AlbumData.getInstance().add(new AlbumModel(albumName, id, Uri.parse("file://" + path)));
+                    if (loadAllImages) {
+                        if (cursor.isFirst()) {
+                            AlbumModel album = new AlbumModel("全部图片", ALBUM_ID_ALL_IMAGES, Uri.parse("file://" + path));
+                            album.setPhotoCount(cursor.getCount());
+                            AlbumData.getInstance().add(album);
+                        }
+                        AlbumData.getInstance().add(new AlbumModel(albumName, id, Uri.parse("file://" + path)));
+                    }
                 }
             }
 

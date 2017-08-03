@@ -127,20 +127,20 @@ public class AlbumActivity extends AppCompatActivity {
     }
 
 
-    public void refreshAlbum(){
+    public void refreshAlbum() {
         pictureAdapter.notifyDataSetChanged();
         albumAdapter.notifyDataSetChanged();
     }
-
-
 
 
     private AlbumAdapter.OnItemClickListener onAlbumClickListener = new AlbumAdapter.OnItemClickListener() {
         @Override
         public void onItemClick(AlbumModel album) {
             albumRecyclerView.setVisibility(View.GONE);
-            AlbumData.getInstance().setCurrentAlbumId(album.getAlbumId());
-            presenter.load();
+            if (!album.getAlbumId().equals(AlbumData.getInstance().getCurrentAlbumId())) {
+                AlbumData.getInstance().setCurrentAlbumId(album.getAlbumId());
+                presenter.load();
+            }
         }
     };
 

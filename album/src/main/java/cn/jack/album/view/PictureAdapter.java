@@ -73,7 +73,7 @@ public class PictureAdapter extends RecyclerView.Adapter<BaseViewHolder<PictureM
 
     @Override
     public int getItemCount() {
-        if (Config.getInstance().isEnableCamera()) {
+        if (enableCamera()) {
             return PictureData.getInstance().getSize() + 1;
         } else {
             return PictureData.getInstance().getSize();
